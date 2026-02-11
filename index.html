@@ -1,178 +1,242 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WPMS Inspection Request</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPMS Inspection Request</title>
 </head>
 <body style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:16px;background:#f5f5f5;">
 
-<h2 style="margin:0 0 4px;">Inspection Request</h2>
-<p style="margin:0 0 20px;color:#666;font-size:14px;">Woodland Park MOD — Lusardi</p>
+    <h2 style="margin:0 0 4px;">Inspection Request</h2>
+    <p style="margin:0 0 20px;color:#666;font-size:14px;">Woodland Park MOD — Lusardi</p>
 
-<div id="formView">
+    <div id="formView">
 
-<label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Photo of Inspection Request *</label>
-<div id="photoBox" onclick="document.getElementById('photoIn').click()" style="border:2px dashed #ccc;border-radius:8px;padding:40px 20px;text-align:center;background:#fff;cursor:pointer;margin-bottom:16px;">
-<div id="photoPrompt">&#128247; Tap to take photo or upload</div>
-<img id="photoPreview" style="display:none;max-width:100%;max-height:300px;border-radius:4px;">
-</div>
-<input type="file" id="photoIn" accept="image/*" capture="environment" onchange="showPhoto(this)" style="display:none;">
+        <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Photo or PDF of Inspection Request *</label>
+        <div id="photoBox" onclick="document.getElementById('photoIn').click()" style="border:2px dashed #ccc;border-radius:8px;padding:40px 20px;text-align:center;background:#fff;cursor:pointer;margin-bottom:16px;">
+            <div id="photoPrompt">&#128247; Tap to take photo, upload image, or select PDF</div>
+            <img id="photoPreview" style="display:none;max-width:100%;max-height:300px;border-radius:4px;">
+        </div>
+        <input type="file" id="photoIn" accept="image/*,application/pdf" capture="environment" onchange="showPhoto(this)" style="display:none;">
 
-<label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Date *</label>
-<input type="date" id="iDate" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;">
+        <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Date *</label>
+        <input type="date" id="iDate" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;">
 
-<label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Time *</label>
-<select id="iTime" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;background:#fff;">
-<option value="">Select time</option>
-<option value="05:00">5:00 AM</option>
-<option value="05:30">5:30 AM</option>
-<option value="06:00">6:00 AM</option>
-<option value="06:30">6:30 AM</option>
-<option value="07:00">7:00 AM</option>
-<option value="07:30">7:30 AM</option>
-<option value="08:00">8:00 AM</option>
-<option value="08:30">8:30 AM</option>
-<option value="09:00">9:00 AM</option>
-<option value="09:30">9:30 AM</option>
-<option value="10:00">10:00 AM</option>
-<option value="10:30">10:30 AM</option>
-<option value="11:00">11:00 AM</option>
-<option value="11:30">11:30 AM</option>
-<option value="12:00">12:00 PM</option>
-<option value="12:30">12:30 PM</option>
-<option value="13:00">1:00 PM</option>
-<option value="13:30">1:30 PM</option>
-<option value="14:00">2:00 PM</option>
-<option value="14:30">2:30 PM</option>
-<option value="15:00">3:00 PM</option>
-<option value="15:30">3:30 PM</option>
-<option value="16:00">4:00 PM</option>
-<option value="16:30">4:30 PM</option>
-<option value="17:00">5:00 PM</option>
-</select>
+        <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Time *</label>
+        <select id="iTime" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;background:#fff;">
+            <option value="">Select time</option>
+            <option value="05:00">5:00 AM</option>
+            <option value="05:30">5:30 AM</option>
+            <option value="06:00">6:00 AM</option>
+            <option value="06:30">6:30 AM</option>
+            <option value="07:00">7:00 AM</option>
+            <option value="07:30">7:30 AM</option>
+            <option value="08:00">8:00 AM</option>
+            <option value="08:30">8:30 AM</option>
+            <option value="09:00">9:00 AM</option>
+            <option value="09:30">9:30 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="10:30">10:30 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="11:30">11:30 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="12:30">12:30 PM</option>
+            <option value="13:00">1:00 PM</option>
+            <option value="13:30">1:30 PM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="14:30">2:30 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="15:30">3:30 PM</option>
+            <option value="16:00">4:00 PM</option>
+            <option value="16:30">4:30 PM</option>
+            <option value="17:00">5:00 PM</option>
+        </select>
 
-<label style="display:block;font-weight:bold;font-size:14px;margin-bottom:8px;">Inspection Type *</label>
-<div style="display:flex;gap:10px;margin-bottom:20px;">
-<button type="button" id="btnSpecial" onclick="setType('Special')" style="flex:1;padding:14px;font-size:15px;font-weight:bold;border:2px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;">Special</button>
-<button type="button" id="btnRegular" onclick="setType('Regular')" style="flex:1;padding:14px;font-size:15px;font-weight:bold;border:2px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;">Regular</button>
-</div>
+        <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:8px;">Inspection Type *</label>
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <button type="button" id="btnSpecial" onclick="setType('Special')" style="flex:1;padding:14px;font-size:15px;font-weight:bold;border:2px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;">Special</button>
+            <button type="button" id="btnRegular" onclick="setType('Regular')" style="flex:1;padding:14px;font-size:15px;font-weight:bold;border:2px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;">Regular</button>
+        </div>
 
-<button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#c4451c;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
+        <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:8px;">Send a copy to:</label>
+        <div style="background:#fff;border:1px solid #ccc;border-radius:6px;padding:12px;margin-bottom:20px;">
+            <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
+                <input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck" style="width:20px;height:20px;">
 
-</div>
+                Jesse Saltzman
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
+                <input type="checkbox" value="rdavis@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
 
-<div id="successView" style="display:none;text-align:center;padding-top:60px;">
-<div style="font-size:48px;">&#9989;</div>
-<h2>Request Submitted</h2>
-<p style="color:#666;">Sent to Jesse Saltzman. It will appear on his calendar.</p>
-<p id="irDisplay" style="font-weight:bold;color:#c4451c;font-size:18px;"></p>
-<p id="emailNote" style="color:#666;font-size:13px;display:none;">A copy has been emailed for lab forwarding.</p>
-<button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#c4451c;background:none;border:2px solid #c4451c;border-radius:8px;cursor:pointer;">Submit Another</button>
-</div>
+                Ron Davis (Lusardi)
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
+                <input type="checkbox" value="slindgren@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
 
-<script>
-var SUPABASE_URL='https://esxeusjjeuyhwwrtwpcv.supabase.co';
-var ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
-var photoFile=null;
-var inspType='';
+                Scuyler Lindgren (Lusardi)
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;font-weight:normal;cursor:pointer;">
+                <input type="checkbox" value="Alejandro.Jimenez@socotec.us" class="emailCheck" style="width:20px;height:20px;">
 
-function showPhoto(input){
-if(input.files&&input.files[0]){
-photoFile=input.files[0];
-var r=new FileReader();
-r.onload=function(e){
-document.getElementById('photoPreview').src=e.target.result;
-document.getElementById('photoPreview').style.display='block';
-document.getElementById('photoPrompt').style.display='none';
-document.getElementById('photoBox').style.borderStyle='solid';
-document.getElementById('photoBox').style.borderColor='#2d7a3a';
-};
-r.readAsDataURL(input.files[0]);
-}
-}
+                Alejandro Jimenez (SOCOTEC)
+            </label>
+        </div>
 
-function setType(t){
-inspType=t;
-var s=document.getElementById('btnSpecial');
-var r=document.getElementById('btnRegular');
-if(t==='Special'){
-s.style.background='#c4451c';s.style.color='#fff';s.style.borderColor='#c4451c';
-r.style.background='#fff';r.style.color='#000';r.style.borderColor='#ccc';
-}else{
-r.style.background='#c4451c';r.style.color='#fff';r.style.borderColor='#c4451c';
-s.style.background='#fff';s.style.color='#000';s.style.borderColor='#ccc';
-}
-}
+        <button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#c4451c;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
 
-function submitIR(){
-var d=document.getElementById('iDate').value;
-var t=document.getElementById('iTime').value;
-if(!photoFile||!d||!t||!inspType){
-alert('Please fill in all required fields and upload a photo.');
-return;
-}
-var btn=document.getElementById('submitBtn');
-btn.textContent='Submitting...';
-btn.disabled=true;
-var fd=new FormData();
-fd.append('photo',photoFile);
-fd.append('mode','photo');
-fd.append('project','WPMS');
-fd.append('gc','Lusardi');
-fd.append('inspection_date',d);
-fd.append('inspection_time',t);
-fd.append('inspection_types',JSON.stringify([inspType]));
-fd.append('subcontractor','');
-fd.append('location_detail','');
-fetch(SUPABASE_URL+'/functions/v1/submit-inspection',{
-method:'POST',
-headers:{'Authorization':'Bearer '+ANON_KEY,'apikey':ANON_KEY},
-body:fd
-}).then(function(r){return r.json();}).then(function(data){
-if(data.ir_number){
-document.getElementById('irDisplay').textContent='IR #'+String(data.ir_number).padStart(4,'0');
-if(inspType==='Special'){
-document.getElementById('emailNote').style.display='block';
-}else{
-document.getElementById('emailNote').style.display='none';
-}
-document.getElementById('formView').style.display='none';
-document.getElementById('successView').style.display='block';
-}else{
-alert('Error: '+(data.error||'Unknown error'));
-btn.textContent='Submit Inspection Request';
-btn.disabled=false;
-}
-}).catch(function(err){
-alert('Connection error. Check internet and try again.');
-btn.textContent='Submit Inspection Request';
-btn.disabled=false;
-});
-}
+    </div>
 
-function resetForm(){
-document.getElementById('formView').style.display='block';
-document.getElementById('successView').style.display='none';
-document.getElementById('iDate').value='';
-document.getElementById('iTime').selectedIndex=0;
-document.getElementById('photoPreview').style.display='none';
-document.getElementById('photoPrompt').style.display='block';
-document.getElementById('photoBox').style.borderStyle='dashed';
-document.getElementById('photoBox').style.borderColor='#ccc';
-document.getElementById('photoIn').value='';
-document.getElementById('submitBtn').textContent='Submit Inspection Request';
-document.getElementById('submitBtn').disabled=false;
-document.getElementById('btnSpecial').style.background='#fff';
-document.getElementById('btnSpecial').style.color='#000';
-document.getElementById('btnSpecial').style.borderColor='#ccc';
-document.getElementById('btnRegular').style.background='#fff';
-document.getElementById('btnRegular').style.color='#000';
-document.getElementById('btnRegular').style.borderColor='#ccc';
-inspType='';
-photoFile=null;
-}
-</script>
+    <div id="successView" style="display:none;text-align:center;padding-top:60px;">
+        <div style="font-size:48px;">&#9989;</div>
+        <h2>Request Submitted</h2>
+        <p style="color:#666;">Sent to Jesse Saltzman. It will appear on his calendar.</p>
+        <p id="irDisplay" style="font-weight:bold;color:#c4451c;font-size:18px;"></p>
+        <p id="emailNote" style="color:#666;font-size:13px;display:none;"></p>
+        <button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#c4451c;background:none;border:2px solid #c4451c;border-radius:8px;cursor:pointer;">Submit Another</button>
+    </div>
+
+    <script>
+    var SUPABASE_URL = 'https://esxeusjjeuyhwwrtwpcv.supabase.co';
+    var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
+    var photoFile = null;
+    var inspType = '';
+
+    function showPhoto(input) {
+        if (input.files && input.files[0]) {
+            photoFile = input.files[0];
+            document.getElementById('photoPrompt').style.display = 'none';
+            document.getElementById('photoBox').style.borderStyle = 'solid';
+            document.getElementById('photoBox').style.borderColor = '#2d7a3a';
+            if (photoFile.type === 'application/pdf') {
+                document.getElementById('photoPreview').style.display = 'none';
+                var pdfLabel = document.getElementById('pdfLabel');
+                if (!pdfLabel) {
+                    pdfLabel = document.createElement('div');
+                    pdfLabel.id = 'pdfLabel';
+                    pdfLabel.style.cssText = 'font-size:16px;padding:20px;color:#2d7a3a;font-weight:bold;';
+                    document.getElementById('photoBox').appendChild(pdfLabel);
+                }
+                pdfLabel.textContent = '&#128196; ' + photoFile.name;
+                pdfLabel.innerHTML = '&#128196; ' + photoFile.name;
+            } else {
+                var pl = document.getElementById('pdfLabel');
+                if (pl)
+                    pl.style.display = 'none';
+                var r = new FileReader();
+                r.onload = function(e) {
+                    document.getElementById('photoPreview').src = e.target.result;
+                    document.getElementById('photoPreview').style.display = 'block';
+                };
+                r.readAsDataURL(input.files[0]);
+            }
+        }
+    }
+
+    function setType(t) {
+        inspType = t;
+        var s = document.getElementById('btnSpecial');
+        var r = document.getElementById('btnRegular');
+        if (t === 'Special') {
+            s.style.background = '#c4451c';
+            s.style.color = '#fff';
+            s.style.borderColor = '#c4451c';
+            r.style.background = '#fff';
+            r.style.color = '#000';
+            r.style.borderColor = '#ccc';
+        } else {
+            r.style.background = '#c4451c';
+            r.style.color = '#fff';
+            r.style.borderColor = '#c4451c';
+            s.style.background = '#fff';
+            s.style.color = '#000';
+            s.style.borderColor = '#ccc';
+        }
+    }
+
+    function submitIR() {
+        var d = document.getElementById('iDate').value;
+        var t = document.getElementById('iTime').value;
+        if (!photoFile || !d || !t || !inspType) {
+            alert('Please fill in all required fields and upload a photo.');
+            return;
+        }
+        var emails = [];
+        document.querySelectorAll('.emailCheck:checked').forEach(function(cb) {
+            emails.push(cb.value);
+        });
+        var btn = document.getElementById('submitBtn');
+        btn.textContent = 'Submitting...';
+        btn.disabled = true;
+        var fd = new FormData();
+        fd.append('photo', photoFile);
+        fd.append('mode', 'photo');
+        fd.append('project', 'WPMS');
+        fd.append('gc', 'Lusardi');
+        fd.append('inspection_date', d);
+        fd.append('inspection_time', t);
+        fd.append('inspection_types', JSON.stringify([inspType]));
+        fd.append('subcontractor', '');
+        fd.append('location_detail', '');
+        if (emails.length > 0) {
+            fd.append('email_recipients', JSON.stringify(emails));
+        }
+        fetch(SUPABASE_URL + '/functions/v1/submit-inspection', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + ANON_KEY,
+                'apikey': ANON_KEY
+            },
+            body: fd
+        }).then(function(r) {
+            return r.json();
+        }).then(function(data) {
+            if (data.ir_number) {
+                document.getElementById('irDisplay').textContent = 'IR #' + String(data.ir_number).padStart(4, '0');
+                if (emails.length > 0) {
+                    document.getElementById('emailNote').textContent = 'Copy emailed to ' + emails.length + ' recipient' + (emails.length > 1 ? 's' : '') + '.';
+                    document.getElementById('emailNote').style.display = 'block';
+                } else {
+                    document.getElementById('emailNote').style.display = 'none';
+                }
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+                btn.textContent = 'Submit Inspection Request';
+                btn.disabled = false;
+            }
+        }).catch(function(err) {
+            alert('Connection error. Check internet and try again.');
+            btn.textContent = 'Submit Inspection Request';
+            btn.disabled = false;
+        });
+    }
+
+    function resetForm() {
+        document.getElementById('formView').style.display = 'block';
+        document.getElementById('successView').style.display = 'none';
+        document.getElementById('iDate').value = '';
+        document.getElementById('iTime').selectedIndex = 0;
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('photoPrompt').style.display = 'block';
+        document.getElementById('photoBox').style.borderStyle = 'dashed';
+        document.getElementById('photoBox').style.borderColor = '#ccc';
+        document.getElementById('photoIn').value = '';
+        document.getElementById('submitBtn').textContent = 'Submit Inspection Request';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('btnSpecial').style.background = '#fff';
+        document.getElementById('btnSpecial').style.color = '#000';
+        document.getElementById('btnSpecial').style.borderColor = '#ccc';
+        document.getElementById('btnRegular').style.background = '#fff';
+        document.getElementById('btnRegular').style.color = '#000';
+        document.getElementById('btnRegular').style.borderColor = '#ccc';
+        document.querySelectorAll('.emailCheck').forEach(function(cb) {
+            cb.checked = false;
+        });
+        inspType = '';
+        photoFile = null;
+    }
+    </script>
 
 </body>
 </html>
