@@ -180,6 +180,10 @@ document.getElementById('emailNote').style.display='none';
 }
 document.getElementById('formView').style.display='none';
 document.getElementById('successView').style.display='block';
+}else if(data.conflict_project){
+alert('That time slot is already booked by '+data.conflict_project+' (IR #'+String(data.conflict_ir).padStart(4,'0')+'). Please pick a different time.');
+btn.textContent='Submit Inspection Request';
+btn.disabled=false;
 }else{
 alert('Error: '+(data.error||'Unknown error'));
 btn.textContent='Submit Inspection Request';
