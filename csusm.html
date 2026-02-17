@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WPMS Inspection Request</title>
+<title>CSUSM Inspection Request</title>
 </head>
 <body style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:16px;background:#f5f5f5;">
 
 <h2 style="margin:0 0 4px;">Inspection Request</h2>
-<p style="margin:0 0 20px;color:#666;font-size:14px;">Woodland Park MOD — Lusardi</p>
+<p style="margin:0 0 20px;color:#666;font-size:14px;">CSU San Marcos IS&amp;E — CW Driver</p>
 
 <div id="formView">
 
@@ -69,20 +69,24 @@
 Jesse Saltzman
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="rdavis@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
-Ron Davis (Lusardi)
+<input type="checkbox" value="khaider@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
+Kyle Haider (CW Driver)
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="slindgren@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
-Scuyler Lindgren (Lusardi)
+<input type="checkbox" value="mmcconkey@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
+Mike McConkey (CW Driver)
+</label>
+<label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
+<input type="checkbox" value="bduzan@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
+Brayden Duzan (CW Driver)
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="Alejandro.Jimenez@socotec.us" class="emailCheck" style="width:20px;height:20px;">
-Alejandro Jimenez (SOCOTEC)
+<input type="checkbox" value="mlulling@ocmi.com" class="emailCheck" style="width:20px;height:20px;">
+Matt Lulling (OCMI)
 </label>
 </div>
 
-<button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#c4451c;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
+<button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#1a5276;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
 
 </div>
 
@@ -91,7 +95,7 @@ Alejandro Jimenez (SOCOTEC)
 <h2>Request Submitted</h2>
 <p style="color:#666;">Sent to Jesse Saltzman. It will appear on his calendar.</p>
 <p id="emailNote" style="color:#666;font-size:13px;display:none;"></p>
-<button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#c4451c;background:none;border:2px solid #c4451c;border-radius:8px;cursor:pointer;">Submit Another</button>
+<button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#1a5276;background:none;border:2px solid #1a5276;border-radius:8px;cursor:pointer;">Submit Another</button>
 </div>
 
 <script>
@@ -143,7 +147,6 @@ pdfLabel.id='pdfLabel';
 pdfLabel.style.cssText='font-size:16px;padding:20px;color:#2d7a3a;font-weight:bold;';
 document.getElementById('photoBox').appendChild(pdfLabel);
 }
-pdfLabel.textContent='&#128196; '+photoFile.name;
 pdfLabel.innerHTML='&#128196; '+photoFile.name;
 }else{
 var pl=document.getElementById('pdfLabel');if(pl)pl.style.display='none';
@@ -162,10 +165,10 @@ inspType=t;
 var s=document.getElementById('btnSpecial');
 var r=document.getElementById('btnRegular');
 if(t==='Special'){
-s.style.background='#c4451c';s.style.color='#fff';s.style.borderColor='#c4451c';
+s.style.background='#1a5276';s.style.color='#fff';s.style.borderColor='#1a5276';
 r.style.background='#fff';r.style.color='#000';r.style.borderColor='#ccc';
 }else{
-r.style.background='#c4451c';r.style.color='#fff';r.style.borderColor='#c4451c';
+r.style.background='#1a5276';r.style.color='#fff';r.style.borderColor='#1a5276';
 s.style.background='#fff';s.style.color='#000';s.style.borderColor='#ccc';
 }
 }
@@ -185,8 +188,8 @@ btn.disabled=true;
 var fd=new FormData();
 fd.append('photo',photoFile);
 fd.append('mode','photo');
-fd.append('project','WPMS');
-fd.append('gc','Lusardi');
+fd.append('project','CSUSM');
+fd.append('gc','CW Driver');
 fd.append('inspection_date',d);
 fd.append('inspection_time',t);
 fd.append('inspection_types',JSON.stringify([inspType]));
@@ -257,6 +260,7 @@ document.getElementById('btnRegular').style.background='#fff';
 document.getElementById('btnRegular').style.color='#000';
 document.getElementById('btnRegular').style.borderColor='#ccc';
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
+var pl=document.getElementById('pdfLabel');if(pl){pl.parentNode.removeChild(pl);}
 inspType='';
 photoFile=null;
 }
