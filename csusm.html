@@ -171,7 +171,7 @@ var p=d.split('-'),DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Frida
 var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
 h.textContent=DN[dt.getDay()]+', '+MN[dt.getMonth()]+' '+dt.getDate();
 var evts=mD[d]||[],em={};
-evts.forEach(function(e){em[e.inspection_time]=e;});
+evts.forEach(function(e){em[e.inspection_time.substring(0,5)]=e;});
 sl.innerHTML='';
 if(evts.length===0){sl.innerHTML='<div class="no-events">No inspections — day is open</div>';}
 else{
