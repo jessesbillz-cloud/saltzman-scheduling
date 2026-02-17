@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSUSM Inspection Request</title>
+<title>WPMS Inspection Request</title>
 </head>
 <body style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:16px;background:#f5f5f5;">
 
 <h2 style="margin:0 0 4px;">Inspection Request</h2>
-<p style="margin:0 0 20px;color:#666;font-size:14px;">CSU San Marcos IS&amp;E — CW Driver</p>
+<p style="margin:0 0 20px;color:#666;font-size:14px;">Woodland Park MOD — Lusardi</p>
 
 <div id="formView">
 
@@ -20,7 +20,11 @@
 <input type="file" id="photoIn" onchange="showPhoto(this)" style="display:none;">
 
 <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Date *</label>
-<input type="date" id="iDate" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;">
+<input type="date" id="iDate" onchange="loadSchedule(this.value)" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:8px;box-sizing:border-box;">
+<div id="scheduleBox" style="display:none;background:#fff;border:1px solid #ccc;border-radius:6px;padding:12px;margin-bottom:16px;">
+<div style="font-weight:bold;font-size:13px;color:#666;margin-bottom:8px;">Jesse's schedule for this day:</div>
+<div id="scheduleList"></div>
+</div>
 
 <label style="display:block;font-weight:bold;font-size:14px;margin-bottom:6px;">Inspection Time *</label>
 <select id="iTime" style="width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px;box-sizing:border-box;background:#fff;">
@@ -65,24 +69,20 @@
 Jesse Saltzman
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="khaider@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
-Kyle Haider (CW Driver)
+<input type="checkbox" value="rdavis@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
+Ron Davis (Lusardi)
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="mmcconkey@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
-Mike McConkey (CW Driver)
-</label>
-<label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="bduzan@cwdriver.com" class="emailCheck" style="width:20px;height:20px;">
-Brayden Duzan (CW Driver)
+<input type="checkbox" value="slindgren@lusardi.com" class="emailCheck" style="width:20px;height:20px;">
+Scuyler Lindgren (Lusardi)
 </label>
 <label style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;font-weight:normal;cursor:pointer;">
-<input type="checkbox" value="mlulling@ocmi.com" class="emailCheck" style="width:20px;height:20px;">
-Matt Lulling (OCMI)
+<input type="checkbox" value="Alejandro.Jimenez@socotec.us" class="emailCheck" style="width:20px;height:20px;">
+Alejandro Jimenez (SOCOTEC)
 </label>
 </div>
 
-<button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#1a5276;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
+<button onclick="submitIR()" id="submitBtn" style="width:100%;padding:14px;font-size:16px;font-weight:bold;color:#fff;background:#c4451c;border:none;border-radius:8px;cursor:pointer;">Submit Inspection Request</button>
 
 </div>
 
@@ -90,16 +90,43 @@ Matt Lulling (OCMI)
 <div style="font-size:48px;">&#9989;</div>
 <h2>Request Submitted</h2>
 <p style="color:#666;">Sent to Jesse Saltzman. It will appear on his calendar.</p>
-<p id="irDisplay" style="font-weight:bold;color:#1a5276;font-size:18px;"></p>
 <p id="emailNote" style="color:#666;font-size:13px;display:none;"></p>
-<button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#1a5276;background:none;border:2px solid #1a5276;border-radius:8px;cursor:pointer;">Submit Another</button>
+<button onclick="resetForm()" style="margin-top:20px;padding:12px 24px;font-size:14px;font-weight:bold;color:#c4451c;background:none;border:2px solid #c4451c;border-radius:8px;cursor:pointer;">Submit Another</button>
 </div>
 
 <script>
 var SUPABASE_URL='https://esxeusjjeuyhwwrtwpcv.supabase.co';
 var ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
+var SCHEDULE_URL=SUPABASE_URL+'/functions/v1/day-schedule';
 var photoFile=null;
 var inspType='';
+
+function loadSchedule(date){
+var box=document.getElementById('scheduleBox');
+var list=document.getElementById('scheduleList');
+if(!date){box.style.display='none';return;}
+list.innerHTML='<span style="color:#999;font-size:13px;">Loading...</span>';
+box.style.display='block';
+fetch(SCHEDULE_URL+'?date='+date).then(function(r){return r.json();}).then(function(data){
+if(data.length===0){
+list.innerHTML='<span style="color:#2d7a3a;font-size:13px;">No inspections scheduled — day is open</span>';
+}else{
+var html='';
+data.forEach(function(s){
+var hr=parseInt(s.inspection_time.split(':')[0]);
+var mn=s.inspection_time.split(':')[1];
+var ampm=hr>=12?'PM':'AM';
+if(hr>12)hr-=12;
+if(hr===0)hr=12;
+var types=(s.inspection_types||[]).join(', ');
+html+='<div style="padding:6px 0;border-bottom:1px solid #eee;font-size:13px;"><strong>'+hr+':'+mn+' '+ampm+'</strong> — '+s.project+' ('+types+')</div>';
+});
+list.innerHTML=html;
+}
+}).catch(function(){
+list.innerHTML='<span style="color:#999;font-size:13px;">Could not load schedule</span>';
+});
+}
 
 function showPhoto(input){
 if(input.files&&input.files[0]){
@@ -116,6 +143,7 @@ pdfLabel.id='pdfLabel';
 pdfLabel.style.cssText='font-size:16px;padding:20px;color:#2d7a3a;font-weight:bold;';
 document.getElementById('photoBox').appendChild(pdfLabel);
 }
+pdfLabel.textContent='&#128196; '+photoFile.name;
 pdfLabel.innerHTML='&#128196; '+photoFile.name;
 }else{
 var pl=document.getElementById('pdfLabel');if(pl)pl.style.display='none';
@@ -134,10 +162,10 @@ inspType=t;
 var s=document.getElementById('btnSpecial');
 var r=document.getElementById('btnRegular');
 if(t==='Special'){
-s.style.background='#1a5276';s.style.color='#fff';s.style.borderColor='#1a5276';
+s.style.background='#c4451c';s.style.color='#fff';s.style.borderColor='#c4451c';
 r.style.background='#fff';r.style.color='#000';r.style.borderColor='#ccc';
 }else{
-r.style.background='#1a5276';r.style.color='#fff';r.style.borderColor='#1a5276';
+r.style.background='#c4451c';r.style.color='#fff';r.style.borderColor='#c4451c';
 s.style.background='#fff';s.style.color='#000';s.style.borderColor='#ccc';
 }
 }
@@ -157,8 +185,8 @@ btn.disabled=true;
 var fd=new FormData();
 fd.append('photo',photoFile);
 fd.append('mode','photo');
-fd.append('project','CSUSM');
-fd.append('gc','CW Driver');
+fd.append('project','WPMS');
+fd.append('gc','Lusardi');
 fd.append('inspection_date',d);
 fd.append('inspection_time',t);
 fd.append('inspection_types',JSON.stringify([inspType]));
@@ -170,8 +198,9 @@ method:'POST',
 headers:{'Authorization':'Bearer '+ANON_KEY,'apikey':ANON_KEY},
 body:fd
 }).then(function(r){return r.json();}).then(function(data){
-if(data.ir_number){
-document.getElementById('irDisplay').textContent='IR #'+String(data.ir_number).padStart(4,'0');
+if(data.success){
+document.getElementById('formView').style.display='none';
+document.getElementById('successView').style.display='block';
 if(emails.length>0){
 document.getElementById('emailNote').textContent='Copy emailed to '+emails.length+' recipient'+(emails.length>1?'s':'')+'.';
 document.getElementById('emailNote').style.display='block';
@@ -181,7 +210,20 @@ document.getElementById('emailNote').style.display='none';
 document.getElementById('formView').style.display='none';
 document.getElementById('successView').style.display='block';
 }else if(data.conflict_project){
-alert('That time slot is already booked by '+data.conflict_project+' (IR #'+String(data.conflict_ir).padStart(4,'0')+'). Please pick a different time.');
+var msg='That time is already booked. Here is Jesse\'s schedule for that day:\n\n';
+if(data.day_schedule&&data.day_schedule.length>0){
+data.day_schedule.forEach(function(s){
+var hr=parseInt(s.inspection_time.split(':')[0]);
+var mn=s.inspection_time.split(':')[1];
+var ampm=hr>=12?'PM':'AM';
+if(hr>12)hr-=12;
+if(hr===0)hr=12;
+var types=(s.inspection_types||[]).join(', ');
+msg+=hr+':'+mn+' '+ampm+' — '+s.project+' ('+types+')\n';
+});
+}
+msg+='\nPlease pick a different time.';
+alert(msg);
 btn.textContent='Submit Inspection Request';
 btn.disabled=false;
 }else{
@@ -215,7 +257,6 @@ document.getElementById('btnRegular').style.background='#fff';
 document.getElementById('btnRegular').style.color='#000';
 document.getElementById('btnRegular').style.borderColor='#ccc';
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-var pl=document.getElementById('pdfLabel');if(pl){pl.parentNode.removeChild(pl);}
 inspType='';
 photoFile=null;
 }
