@@ -171,7 +171,7 @@ var p=d.split('-'),DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Frida
 var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
 h.textContent=DN[dt.getDay()]+', '+MN[dt.getMonth()]+' '+dt.getDate();
 var evts=mD[d]||[],em={};
-evts.forEach(function(e){em[e.inspection_time.substring(0,5)]=e;});
+evts.forEach(function(e){var k=e.inspection_time.substring(0,5);if(!em[k])em[k]=[];em[k].push(e);});
 sl.innerHTML='';
 if(evts.length===0){sl.innerHTML='<div class="no-events">No inspections — day is open</div>';}
 else{
@@ -180,8 +180,10 @@ var s=document.createElement('div');s.className='time-slot';
 var tc=document.createElement('div');tc.className='time-content';
 s.innerHTML='<div class="time-label">'+fmt(t)+'</div>';
 if(em[t]){
-var e=em[t],ty=(e.inspection_types||[]).join(', ');
-tc.innerHTML='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+e.project+' — '+ty+'</div>';
+em[t].forEach(function(e){
+var ty=(e.inspection_types||[]).join(', ');
+tc.innerHTML+='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+e.project+' — '+ty+'</div>';
+});
 }
 s.appendChild(tc);sl.appendChild(s);
 });
