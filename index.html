@@ -13,26 +13,36 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .tabs{display:flex;border-bottom:2px solid #eee;margin-bottom:0;}
 .tab{flex:1;text-align:center;padding:10px;font-size:14px;font-weight:600;cursor:pointer;color:#999;border-bottom:2px solid transparent;margin-bottom:-2px;}
 .tab.active{color:#c4451c;border-bottom-color:#c4451c;}
-.cal-wrap{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;overflow:hidden;}
+.card{background:#fff;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.card-top{border-radius:8px 8px 0 0;border-top:none;}
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #eee;}
 .cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;}
 .cal-nav strong{font-size:15px;}
 .week-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;}
 .week-header{font-size:11px;color:#999;padding:6px 0;font-weight:600;}
-.day-cell{padding:8px 4px;font-size:13px;cursor:pointer;position:relative;min-height:40px;}
+.day-cell{padding:8px 4px;font-size:13px;cursor:pointer;min-height:40px;}
 .day-cell:hover{background:#f8f8f8;}
 .day-cell.selected{background:#fff3f0;border-radius:6px;}
 .day-cell.today .day-num{background:#c4451c;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
 .day-cell.other-month{color:#ccc;}
 .day-dot{width:5px;height:5px;background:#c4451c;border-radius:50%;margin:2px auto 0;}
-.timeline{margin-top:8px;padding:0 14px 14px;}
-.timeline-header{font-size:13px;font-weight:bold;color:#333;padding:8px 0;border-bottom:1px solid #eee;}
-.time-slot{display:flex;border-bottom:1px solid #f0f0f0;min-height:36px;}
-.time-label{width:60px;font-size:11px;color:#999;padding:8px 0;flex-shrink:0;}
-.time-content{flex:1;padding:4px 0;}
-.event-block{background:#c4451c;color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;margin:2px 0;}
-.event-block.special{background:#e8a838;}
-.no-events{color:#2d7a3a;font-size:12px;padding:10px 0;text-align:center;}
+.day-detail{padding:12px 14px;border-top:1px solid #eee;display:none;}
+.day-detail-header{font-size:13px;font-weight:bold;color:#333;margin-bottom:8px;}
+.evt-row{padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;}
+.evt-row:last-child{border-bottom:none;}
+.evt-time{font-weight:600;color:#c4451c;}
+.evt-type{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-left:6px;}
+.evt-type.regular{background:#e8f5e9;color:#2e7d32;}
+.evt-type.special{background:#fff3e0;color:#e65100;}
+.evt-who{color:#666;font-size:12px;}
+.evt-notes{color:#888;font-size:11px;font-style:italic;margin-top:2px;}
+.no-events{color:#999;font-size:12px;padding:4px 0;}
+.log-section{padding:14px;}
+.log-title{font-size:14px;font-weight:bold;margin-bottom:10px;color:#333;}
+.log-date{font-size:13px;font-weight:600;color:#c4451c;padding:8px 0 4px;border-bottom:1px solid #eee;}
+.log-item{padding:6px 0 6px 12px;border-bottom:1px solid #f5f5f5;font-size:13px;}
+.log-item:last-child{border-bottom:none;}
+.log-empty{color:#999;font-size:13px;padding:8px 0;}
 .form-wrap{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#333;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;}
@@ -62,19 +72,27 @@ select.field-input{background:#fff;}
 <div class="tab active" onclick="switchTab('calendar')">Calendar</div>
 <div class="tab" onclick="switchTab('request')">New Request</div>
 </div>
-<div id="calendarView" class="cal-wrap">
+<div id="calendarView">
+<div class="card card-top" style="border-top:none;border-radius:0;">
 <div class="cal-nav">
 <button onclick="changeMonth(-1)">&larr;</button>
 <strong id="monthLabel"></strong>
 <button onclick="changeMonth(1)">&rarr;</button>
 </div>
-<div class="week-row">
+<div class="week-row" style="padding:0 8px;">
 <div class="week-header">S</div><div class="week-header">M</div><div class="week-header">T</div><div class="week-header">W</div><div class="week-header">T</div><div class="week-header">F</div><div class="week-header">S</div>
 </div>
-<div id="calGrid" class="week-row"></div>
-<div class="timeline" id="timelineWrap" style="display:none;">
-<div class="timeline-header" id="timelineDate"></div>
-<div id="timelineSlots"></div>
+<div id="calGrid" class="week-row" style="padding:0 8px;"></div>
+<div class="day-detail" id="dayDetail">
+<div class="day-detail-header" id="dayDetailHeader"></div>
+<div id="dayDetailList"></div>
+</div>
+</div>
+<div class="card">
+<div class="log-section">
+<div class="log-title">Upcoming Inspections</div>
+<div id="logList"></div>
+</div>
 </div>
 </div>
 <div id="requestView" class="form-wrap">
@@ -139,11 +157,13 @@ var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
 var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
 var photoFile=null,inspType='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
-var mD={},selDate=null;
-var TIMES=['05:00','05:30','06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+var mD={},selDate=null,allEvents=[];
+var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
 function pad(n){return String(n).padStart(2,'0');}
 function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
+function fmtDate(s){var p=s.split('-');var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));return DN[dt.getDay()]+' '+parseInt(p[1])+'.'+parseInt(p[2])+'.'+p[0].substring(2);}
 function switchTab(t){
 document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
@@ -152,10 +172,9 @@ document.getElementById('requestView').style.display=t==='request'?'block':'none
 }
 function changeMonth(dir){
 cM+=dir;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}
-selDate=null;document.getElementById('timelineWrap').style.display='none';loadMD();
+selDate=null;document.getElementById('dayDetail').style.display='none';loadMD();
 }
 function renderCal(){
-var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 document.getElementById('monthLabel').textContent=MN[cM]+' '+cY;
 var g=document.getElementById('calGrid');g.innerHTML='';
 var f=new Date(cY,cM,1),ld=new Date(cY,cM+1,0).getDate(),sd=f.getDay(),today=new Date();
@@ -168,45 +187,76 @@ if(d===today.getDate()&&cM===today.getMonth()&&cY===today.getFullYear())c.classN
 if(s===selDate)c.className+=' selected';
 c.innerHTML='<span class="day-num">'+d+'</span>';
 if(mD[s]&&mD[s].length>0)c.innerHTML+='<div class="day-dot"></div>';
-c.onclick=(function(x){return function(){selDate=x;renderCal();showTL(x);};})(s);
+c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
 g.appendChild(c);
 }
 var rem=(sd+ld)%7;if(rem>0)for(var i=1;i<=7-rem;i++){var c=document.createElement('div');c.className='day-cell other-month';c.innerHTML='<span class="day-num">'+i+'</span>';g.appendChild(c);}
 }
-function showTL(d){
-var w=document.getElementById('timelineWrap'),h=document.getElementById('timelineDate'),sl=document.getElementById('timelineSlots');
-var p=d.split('-'),DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
-var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-h.textContent=DN[dt.getDay()]+', '+MN[dt.getMonth()]+' '+dt.getDate();
-var evts=mD[d]||[],em={};
-evts.forEach(function(e){var k=e.inspection_time.substring(0,5);if(!em[k])em[k]=[];em[k].push(e);});
-sl.innerHTML='';
-if(evts.length===0){sl.innerHTML='<div class="no-events">No inspections — day is open</div>';}
-else{
-TIMES.forEach(function(t){
-var s=document.createElement('div');s.className='time-slot';
-var tc=document.createElement('div');tc.className='time-content';
-s.innerHTML='<div class="time-label">'+fmt(t)+'</div>';
-if(em[t]){
-em[t].forEach(function(e){
-var ty=(e.inspection_types||[]).join(', ');
-var who=e.submitted_by||e.gc||'';
-var detail=e.project+' — '+ty+(who?' — '+who:'');
-if(e.notes)detail+='<br><span style="font-size:10px;opacity:0.85;">'+e.notes+'</span>';
-tc.innerHTML+='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+detail+'</div>';
+function showDay(d){
+var wrap=document.getElementById('dayDetail');
+var header=document.getElementById('dayDetailHeader');
+var list=document.getElementById('dayDetailList');
+header.textContent=fmtDate(d);
+var evts=mD[d]||[];
+if(evts.length===0){
+list.innerHTML='<div class="no-events">No inspections scheduled</div>';
+}else{
+var html='';
+evts.forEach(function(e){
+var ty=(e.inspection_types||[]).join(', ')||'Inspection';
+var tyClass=ty.toLowerCase().indexOf('special')>=0?'special':'regular';
+html+='<div class="evt-row">';
+html+='<span class="evt-time">'+fmt(e.inspection_time.substring(0,5))+'</span>';
+html+=' — '+e.project;
+html+='<span class="evt-type '+tyClass+'">'+ty+'</span>';
+if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
+if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
+html+='</div>';
 });
+list.innerHTML=html;
 }
-s.appendChild(tc);sl.appendChild(s);
+wrap.style.display='block';
+}
+function renderLog(){
+var log=document.getElementById('logList');
+var today=new Date();today.setHours(0,0,0,0);
+var upcoming=allEvents.filter(function(e){
+var p=e.inspection_date.split('-');
+var d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+return d>=today;
 });
-}
-w.style.display='block';
+if(upcoming.length===0){log.innerHTML='<div class="log-empty">No upcoming inspections</div>';return;}
+var byDate={};
+upcoming.forEach(function(e){
+if(!byDate[e.inspection_date])byDate[e.inspection_date]=[];
+byDate[e.inspection_date].push(e);
+});
+var dates=Object.keys(byDate).sort();
+var html='';
+dates.forEach(function(d){
+html+='<div class="log-date">'+fmtDate(d)+'</div>';
+byDate[d].forEach(function(e){
+var ty=(e.inspection_types||[]).join(', ')||'Inspection';
+var tyClass=ty.toLowerCase().indexOf('special')>=0?'special':'regular';
+html+='<div class="log-item">';
+html+='<span class="evt-time">'+fmt(e.inspection_time.substring(0,5))+'</span>';
+html+=' — '+e.project;
+html+='<span class="evt-type '+tyClass+'">'+ty+'</span>';
+if(e.submitted_by)html+=' — '+e.submitted_by;
+if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
+html+='</div>';
+});
+});
+log.innerHTML=html;
 }
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
 fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
-mD={};data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});renderCal();
+mD={};allEvents=data;
+data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});
+renderCal();renderLog();
 }).catch(function(){renderCal();});
 }
 function showPhoto(input){
@@ -244,7 +294,7 @@ document.getElementById('tabBar').style.display='none';document.getElementById('
 if(emails.length>0){document.getElementById('emailNote').textContent='Copy emailed to '+emails.length+' recipient'+(emails.length>1?'s':'')+'.';document.getElementById('emailNote').style.display='block';}
 }else if(data.conflict_project){
 var msg='That time is already booked.\n\n';
-if(data.day_schedule&&data.day_schedule.length>0){data.day_schedule.forEach(function(s){msg+=fmt(s.inspection_time)+' — '+s.project+' ('+(s.inspection_types||[]).join(', ')+')\n';});}
+if(data.day_schedule&&data.day_schedule.length>0){data.day_schedule.forEach(function(s){msg+=fmt(s.inspection_time.substring(0,5))+' — '+s.project+' ('+(s.inspection_types||[]).join(', ')+')\n';});}
 msg+='\nPlease pick a different time.';alert(msg);btn.textContent='Submit Inspection Request';btn.disabled=false;
 }else{alert('Error: '+(data.error||'Unknown error'));btn.textContent='Submit Inspection Request';btn.disabled=false;}
 }).catch(function(){alert('Connection error.');btn.textContent='Submit Inspection Request';btn.disabled=false;});
@@ -257,9 +307,8 @@ document.getElementById('photoPrompt').style.display='block';document.getElement
 document.getElementById('photoIn').value='';document.getElementById('submitBtn').textContent='Submit Inspection Request';document.getElementById('submitBtn').disabled=false;
 document.getElementById('btnSpecial').classList.remove('active');document.getElementById('btnRegular').classList.remove('active');
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-inspType='';photoFile=null;
-document.getElementById('iName').value='';document.getElementById('iNotes').value='';
-loadMD();
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';
+inspType='';photoFile=null;loadMD();
 }
 loadMD();
 </script>
