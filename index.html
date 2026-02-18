@@ -90,7 +90,7 @@ select.field-input{background:#fff;}
 </div>
 <div class="card">
 <div class="log-section">
-<div class="log-title">Upcoming Inspections</div>
+<div class="log-title">Inspection Log</div>
 <div id="logList"></div>
 </div>
 </div>
@@ -186,7 +186,11 @@ c.className='day-cell';
 if(d===today.getDate()&&cM===today.getMonth()&&cY===today.getFullYear())c.className+=' today';
 if(s===selDate)c.className+=' selected';
 c.innerHTML='<span class="day-num">'+d+'</span>';
-if(mD[s]&&mD[s].length>0)c.innerHTML+='<div class="day-dot"></div>';
+if(mD[s]&&mD[s].length>0){
+var hasSpecial=mD[s].some(function(ev){return(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;});
+var dotColor=hasSpecial?'#e8a838':'#c4451c';
+c.innerHTML+='<div class="day-dot" style="background:'+dotColor+'"></div>';
+}
 c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
 g.appendChild(c);
 }
@@ -220,12 +224,8 @@ wrap.style.display='block';
 function renderLog(){
 var log=document.getElementById('logList');
 var today=new Date();today.setHours(0,0,0,0);
-var upcoming=allEvents.filter(function(e){
-var p=e.inspection_date.split('-');
-var d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-return d>=today;
-});
-if(upcoming.length===0){log.innerHTML='<div class="log-empty">No upcoming inspections</div>';return;}
+var upcoming=allEvents.slice();
+if(upcoming.length===0){log.innerHTML='<div class="log-empty">No inspections this month</div>';return;}
 var byDate={};
 upcoming.forEach(function(e){
 if(!byDate[e.inspection_date])byDate[e.inspection_date]=[];
