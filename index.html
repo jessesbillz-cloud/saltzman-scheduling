@@ -90,7 +90,11 @@ select.field-input{background:#fff;}
 </div>
 <div class="card">
 <div class="log-section">
-<div class="log-title">Inspection Log</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+<button onclick="changeWeek(-1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;">&larr;</button>
+<strong class="log-title" id="weekLabel"></strong>
+<button onclick="changeWeek(1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;">&rarr;</button>
+</div>
 <div id="logList"></div>
 </div>
 </div>
@@ -158,6 +162,7 @@ var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV
 var photoFile=null,inspType='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={},selDate=null,allEvents=[];
+var weekOffset=0;
 var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
@@ -221,34 +226,48 @@ list.innerHTML=html;
 }
 wrap.style.display='block';
 }
-function renderLog(){
-var log=document.getElementById('logList');
+function changeWeek(dir){weekOffset+=dir;loadWeekLog();}
+function getWeekRange(){
 var today=new Date();today.setHours(0,0,0,0);
-var upcoming=allEvents.slice();
-if(upcoming.length===0){log.innerHTML='<div class="log-empty">No inspections this month</div>';return;}
+var dayOfWeek=today.getDay();
+var start=new Date(today);start.setDate(today.getDate()-dayOfWeek+(weekOffset*7));
+var end=new Date(start);end.setDate(start.getDate()+6);
+return{start:start,end:end};
+}
+function loadWeekLog(){
+var log=document.getElementById('logList');
+var wk=getWeekRange();
+var s=wk.start,e=wk.end;
+var sStr=s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
+var eStr=e.getFullYear()+'-'+pad(e.getMonth()+1)+'-'+pad(e.getDate());
+document.getElementById('weekLabel').textContent=MN[s.getMonth()]+' '+s.getDate()+' — '+MN[e.getMonth()]+' '+e.getDate();
+log.innerHTML='<div class="log-empty" style="color:#999;">Loading...</div>';
+fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+sStr+'&inspection_date=lte.'+eStr+'&order=inspection_date,inspection_time',{
+headers:{'apikey':AK,'Authorization':'Bearer '+AK}
+}).then(function(r){return r.json();}).then(function(data){
+if(data.length===0){log.innerHTML='<div class="log-empty">No inspections this week</div>';return;}
 var byDate={};
-upcoming.forEach(function(e){
-if(!byDate[e.inspection_date])byDate[e.inspection_date]=[];
-byDate[e.inspection_date].push(e);
-});
+data.forEach(function(ev){if(!byDate[ev.inspection_date])byDate[ev.inspection_date]=[];byDate[ev.inspection_date].push(ev);});
 var dates=Object.keys(byDate).sort();
 var html='';
 dates.forEach(function(d){
 html+='<div class="log-date">'+fmtDate(d)+'</div>';
-byDate[d].forEach(function(e){
-var ty=(e.inspection_types||[]).join(', ')||'Inspection';
+byDate[d].forEach(function(ev){
+var ty=(ev.inspection_types||[]).join(', ')||'Inspection';
 var tyClass=ty.toLowerCase().indexOf('special')>=0?'special':'regular';
 html+='<div class="log-item">';
-html+='<span class="evt-time">'+fmt(e.inspection_time.substring(0,5))+'</span>';
-html+=' — '+e.project;
+html+='<span class="evt-time">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
+html+=' — '+ev.project;
 html+='<span class="evt-type '+tyClass+'">'+ty+'</span>';
-if(e.submitted_by)html+=' — '+e.submitted_by;
-if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
+if(ev.submitted_by)html+=' — '+ev.submitted_by;
+if(ev.notes)html+='<div class="evt-notes">'+ev.notes+'</div>';
 html+='</div>';
 });
 });
 log.innerHTML=html;
+}).catch(function(){log.innerHTML='<div class="log-empty">Could not load</div>';});
 }
+function renderLog(){loadWeekLog();}
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
 fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
