@@ -109,6 +109,16 @@ select.field-input{background:#fff;}
 <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
 <div class="type-btn" id="btnRegular" onclick="setType('Regular')">Regular</div>
 </div>
+<label class="field-label">Submitted By *</label>
+<select id="iName" class="field-input">
+<option value="">Select your name</option>
+<option value="Kyle Haider">Kyle Haider (CW Driver)</option>
+<option value="Mike McConkey">Mike McConkey (CW Driver)</option>
+<option value="Brayden Duzan">Brayden Duzan (CW Driver)</option>
+<option value="Matt Lulling">Matt Lulling (OCMI)</option>
+</select>
+<label class="field-label">Notes</label>
+<textarea id="iNotes" class="field-input" rows="3" placeholder="Optional — any additional details" style="resize:vertical;"></textarea>
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
@@ -182,7 +192,10 @@ s.innerHTML='<div class="time-label">'+fmt(t)+'</div>';
 if(em[t]){
 em[t].forEach(function(e){
 var ty=(e.inspection_types||[]).join(', ');
-tc.innerHTML+='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+e.project+' — '+ty+'</div>';
+var who=e.submitted_by||e.gc||'';
+var detail=e.project+' — '+ty+(who?' — '+who:'');
+if(e.notes)detail+='<br><span style="font-size:10px;opacity:0.85;">'+e.notes+'</span>';
+tc.innerHTML+='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+detail+'</div>';
 });
 }
 s.appendChild(tc);sl.appendChild(s);
@@ -192,7 +205,7 @@ w.style.display='block';
 }
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
 mD={};data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});renderCal();
@@ -215,14 +228,15 @@ var r=new FileReader();r.onload=function(e){document.getElementById('photoPrevie
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='Regular');}
 function submitIR(){
-var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value;
-if(!photoFile||!d||!t||!inspType){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
+if(!photoFile||!d||!t||!inspType||!nm){alert('Please fill in all required fields and upload a photo/PDF.');return;}
 var emails=[];document.querySelectorAll('.emailCheck:checked').forEach(function(cb){emails.push(cb.value);});
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
 fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','CSUSM');fd.append('gc','CW Driver');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));
 fd.append('subcontractor','');fd.append('location_detail','');
+fd.append('submitted_by',nm);fd.append('notes',nt);
 if(emails.length>0){fd.append('email_recipients',JSON.stringify(emails));}
 fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd
 }).then(function(r){return r.json();}).then(function(data){
@@ -245,7 +259,9 @@ document.getElementById('photoPrompt').style.display='block';document.getElement
 document.getElementById('photoIn').value='';document.getElementById('submitBtn').textContent='Submit Inspection Request';document.getElementById('submitBtn').disabled=false;
 document.getElementById('btnSpecial').classList.remove('active');document.getElementById('btnRegular').classList.remove('active');
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-inspType='';photoFile=null;loadMD();
+inspType='';photoFile=null;
+document.getElementById('iName').value='';document.getElementById('iNotes').value='';
+loadMD();
 }
 loadMD();
 </script>
