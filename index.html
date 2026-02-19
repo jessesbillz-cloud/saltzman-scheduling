@@ -25,7 +25,7 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-cell.selected{background:#1e2a3a;border-radius:6px;}
 .day-cell.today .day-num{background:#3a6fb0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
 .day-cell.other-month{color:#444;}
-.day-dot{width:5px;height:5px;border-radius:50%;margin:2px auto 0;}
+.day-dot{width:80%;height:3px;border-radius:2px;margin:3px auto 0;}
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:13px;font-weight:bold;color:#fff;margin-bottom:8px;}
 .evt-row{padding:8px 0;border-bottom:1px solid #2a2a2a;font-size:13px;color:#fff;}
@@ -100,12 +100,18 @@ select.field-input{background:#222;color:#fff;}
 </div>
 <div class="card">
 <div class="log-section">
+<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="toggleLog()">
+<strong class="log-title" style="flex:1;">Weekly Log</strong>
+<span id="logToggle" style="color:#888;font-size:18px;">&#9654;</span>
+</div>
+<div id="logWrap" style="display:none;margin-top:10px;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-<button onclick="changeWeek(-1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;">&larr;</button>
-<strong class="log-title" id="weekLabel"></strong>
-<button onclick="changeWeek(1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;">&rarr;</button>
+<button onclick="event.stopPropagation();changeWeek(-1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#888;">&larr;</button>
+<strong class="log-title" id="weekLabel" style="font-size:13px;"></strong>
+<button onclick="event.stopPropagation();changeWeek(1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#888;">&rarr;</button>
 </div>
 <div id="logList"></div>
+</div>
 </div>
 </div>
 </div>
@@ -277,6 +283,12 @@ list.innerHTML=html;
 wrap.style.display='block';
 }
 function changeWeek(dir){weekOffset+=dir;loadWeekLog();}
+function toggleLog(){
+var w=document.getElementById('logWrap');
+var t=document.getElementById('logToggle');
+if(w.style.display==='none'){w.style.display='block';t.innerHTML='&#9660;';loadWeekLog();}
+else{w.style.display='none';t.innerHTML='&#9654;';}
+}
 function getWeekRange(){
 var today=new Date();today.setHours(0,0,0,0);
 var dayOfWeek=today.getDay();
