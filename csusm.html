@@ -3,52 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSUSM Inspection Request</title>
+<title>WPMS Inspection Request</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:12px;background:#f5f5f5;}
+body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:12px;background:#111;}
 .header{margin-bottom:12px;}
-.header h2{font-size:18px;margin-bottom:2px;}
-.header p{color:#666;font-size:13px;}
-.tabs{display:flex;border-bottom:2px solid #eee;margin-bottom:0;}
-.tab{flex:1;text-align:center;padding:10px;font-size:14px;font-weight:600;cursor:pointer;color:#999;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.header h2{font-size:18px;margin-bottom:2px;color:#fff;}
+.header p{color:#888;font-size:13px;}
+.tabs{display:flex;border-bottom:2px solid #333;margin-bottom:0;}
+.tab{flex:1;text-align:center;padding:10px;font-size:14px;font-weight:600;cursor:pointer;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px;}
 .tab.active{color:#1a5276;border-bottom-color:#1a5276;}
-.cal-wrap{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;overflow:hidden;}
-.cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #eee;}
-.cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#333;}
-.cal-nav strong{font-size:15px;}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.card-top{border-radius:8px 8px 0 0;border-top:none;}
+.cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
+.cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#888;}
+.cal-nav strong{font-size:15px;color:#fff;}
 .week-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;}
-.week-header{font-size:11px;color:#999;padding:6px 0;font-weight:600;}
-.day-cell{padding:8px 4px;font-size:13px;cursor:pointer;position:relative;min-height:40px;}
-.day-cell:hover{background:#f8f8f8;}
-.day-cell.selected{background:#f0f4f8;border-radius:6px;}
-.day-cell.today .day-num{background:#1a5276;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
-.day-cell.other-month{color:#ccc;}
-.day-dot{width:5px;height:5px;background:#1a5276;border-radius:50%;margin:2px auto 0;}
-.timeline{margin-top:8px;padding:0 14px 14px;}
-.timeline-header{font-size:13px;font-weight:bold;color:#333;padding:8px 0;border-bottom:1px solid #eee;}
-.time-slot{display:flex;border-bottom:1px solid #f0f0f0;min-height:36px;}
-.time-label{width:60px;font-size:11px;color:#999;padding:8px 0;flex-shrink:0;}
-.time-content{flex:1;padding:4px 0;}
-.event-block{background:#1a5276;color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;margin:2px 0;}
-.event-block.special{background:#e8a838;}
-.no-events{color:#2d7a3a;font-size:12px;padding:10px 0;text-align:center;}
-.form-wrap{background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
-.field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#333;}
-.field-input{width:100%;padding:10px;font-size:15px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;}
-select.field-input{background:#fff;}
-.photo-box{border:2px dashed #ccc;border-radius:8px;padding:30px 16px;text-align:center;background:#fafafa;cursor:pointer;margin-bottom:14px;}
-.photo-box.has-file{border-style:solid;border-color:#2d7a3a;}
+.week-header{font-size:11px;color:#666;padding:6px 0;font-weight:600;}
+.day-cell{padding:8px 4px;font-size:13px;cursor:pointer;min-height:40px;color:#ccc;}
+.day-cell:hover{background:#222;}
+.day-cell.selected{background:#1e2a3a;border-radius:6px;}
+.day-cell.today .day-num{background:#3a6fb0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
+.day-cell.other-month{color:#444;}
+.day-dot{width:80%;height:3px;border-radius:2px;margin:3px auto 0;}
+.day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
+.day-detail-header{font-size:13px;font-weight:bold;color:#fff;margin-bottom:8px;}
+.evt-row{padding:8px 0;border-bottom:1px solid #2a2a2a;font-size:13px;color:#fff;}
+.evt-row:last-child{border-bottom:none;}
+.evt-time{font-weight:600;color:#fff;}
+.evt-type{font-size:11px;font-weight:600;margin-left:4px;color:#888;}
+.evt-actions{margin-top:4px;}
+.evt-actions button{font-size:11px;padding:3px 10px;margin-right:6px;border-radius:4px;cursor:pointer;background:transparent;}
+.evt-actions .btn-edit{color:#5a8fc0;border:1px solid #5a8fc0;}
+.evt-actions .btn-cancel{color:#c44;border:1px solid #c44;}
+.evt-cancelled{opacity:0.4;}
+.evt-cancelled .evt-time,.evt-cancelled .evt-type{text-decoration:line-through;}
+.cancelled-label{font-size:10px;color:#c44;font-weight:600;margin-left:6px;}
+.evt-who{color:#888;font-size:12px;margin-top:2px;}
+.evt-notes{color:#666;font-size:11px;font-style:italic;margin-top:2px;}
+.no-events{color:#555;font-size:12px;padding:4px 0;}
+.form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
+.field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
+.field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
+select.field-input{background:#222;color:#fff;}
+.photo-box{border:2px dashed #444;border-radius:8px;padding:30px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
+.photo-box.has-file{border-style:solid;border-color:#3a6fb0;}
 .type-btns{display:flex;gap:8px;margin-bottom:14px;}
-.type-btn{flex:1;padding:12px;font-size:14px;font-weight:bold;border:2px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;text-align:center;}
+.type-btn{flex:1;padding:12px;font-size:14px;font-weight:bold;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;}
 .type-btn.active{background:#1a5276;color:#fff;border-color:#1a5276;}
-.email-list{background:#fafafa;border:1px solid #eee;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
-.email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #eee;font-size:13px;}
+.dur-btns{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.dur-btn{padding:10px 0;font-size:13px;font-weight:600;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;flex:1;min-width:55px;}
+.dur-btn.active{background:#1a5276;color:#fff;border-color:#1a5276;}
+.special-sub{display:none;margin-bottom:14px;}
+.special-sub.show{display:block;}
+.email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
+.email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
 .email-row:last-child{border-bottom:none;}
 .email-row input{width:18px;height:18px;}
 .submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#1a5276;border:none;border-radius:8px;cursor:pointer;}
 .submit-btn:disabled{opacity:0.6;}
-.success-view{display:none;text-align:center;padding:60px 20px;}
+.success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
 .success-view h2{margin:12px 0 8px;}
 .reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#1a5276;background:none;border:2px solid #1a5276;border-radius:8px;cursor:pointer;}
 </style>
@@ -56,25 +70,35 @@ select.field-input{background:#fff;}
 <body>
 <div class="header">
 <h2>Inspection Request</h2>
-<p>CSU San Marcos IS&amp;E — CW Driver</p>
+<p>CSU San Marcos IS&E — CW Driver</p>
 </div>
 <div class="tabs" id="tabBar">
 <div class="tab active" onclick="switchTab('calendar')">Calendar</div>
 <div class="tab" onclick="switchTab('request')">New Request</div>
 </div>
-<div id="calendarView" class="cal-wrap">
+<div id="calendarView">
+<div class="card card-top" style="border-top:none;border-radius:0;">
 <div class="cal-nav">
 <button onclick="changeMonth(-1)">&larr;</button>
 <strong id="monthLabel"></strong>
 <button onclick="changeMonth(1)">&rarr;</button>
 </div>
-<div class="week-row">
+<div class="week-row" style="padding:0 8px;">
 <div class="week-header">S</div><div class="week-header">M</div><div class="week-header">T</div><div class="week-header">W</div><div class="week-header">T</div><div class="week-header">F</div><div class="week-header">S</div>
 </div>
-<div id="calGrid" class="week-row"></div>
-<div class="timeline" id="timelineWrap" style="display:none;">
-<div class="timeline-header" id="timelineDate"></div>
-<div id="timelineSlots"></div>
+<div id="calGrid" class="week-row" style="padding:0 8px;"></div>
+<div class="day-detail" id="dayDetail">
+<div class="day-detail-header" id="dayDetailHeader"></div>
+<div id="dayDetailList"></div>
+</div>
+</div>
+<div class="card">
+<div style="padding:20px;text-align:center;">
+<img src="image0-5.jpeg" alt="Reports Logo" style="width:80px;height:80px;margin-bottom:8px;">
+<div style="font-size:24px;font-weight:bold;color:#e8742a;margin-bottom:4px;">My Daily Reports</div>
+<div style="font-size:13px;color:#888;margin-bottom:12px;">Professional inspection documentation</div>
+<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#5a8fc0;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.com','_blank')">Learn More</button>
+</div>
 </div>
 </div>
 <div id="requestView" class="form-wrap">
@@ -90,6 +114,7 @@ select.field-input{background:#fff;}
 <label class="field-label">Inspection Time *</label>
 <select id="iTime" class="field-input">
 <option value="">Select time</option>
+<option value="flexible">Flexible — anytime today</option>
 <option value="05:00">5:00 AM</option><option value="05:30">5:30 AM</option>
 <option value="06:00">6:00 AM</option><option value="06:30">6:30 AM</option>
 <option value="07:00">7:00 AM</option><option value="07:30">7:30 AM</option>
@@ -104,19 +129,42 @@ select.field-input{background:#fff;}
 <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
 <option value="17:00">5:00 PM</option>
 </select>
+<label class="field-label">Duration *</label>
+<div class="dur-btns" id="durBtns">
+<div class="dur-btn" onclick="setDur('30')">30 min</div>
+<div class="dur-btn" onclick="setDur('60')">1 hr</div>
+<div class="dur-btn" onclick="setDur('120')">2 hr</div>
+<div class="dur-btn" onclick="setDur('240')">4 hr</div>
+<div class="dur-btn" onclick="setDur('480')">All Day</div>
+</div>
 <label class="field-label">Inspection Type *</label>
 <div class="type-btns">
 <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
-<div class="type-btn" id="btnRegular" onclick="setType('Regular')">Regular</div>
+<div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
+</div>
+<div class="special-sub" id="specialSub">
+<label class="field-label">Special Inspection Type *</label>
+<select class="field-input" id="specialType">
+<option value="">Select type</option>
+<option value="Material ID">Material ID</option>
+<option value="CWI">CWI (Welding)</option>
+<option value="Bolting">Bolting</option>
+<option value="Pull Test">Pull Test</option>
+<option value="Soils">Soils</option>
+<option value="Concrete">Concrete</option>
+<option value="Fireproofing">Fireproofing</option>
+</select>
 </div>
 <label class="field-label">Submitted By *</label>
-<select id="iName" class="field-input">
+<select id="iName" class="field-input" onchange="toggleOtherName()">
 <option value="">Select your name</option>
 <option value="Kyle Haider">Kyle Haider (CW Driver)</option>
 <option value="Mike McConkey">Mike McConkey (CW Driver)</option>
 <option value="Brayden Duzan">Brayden Duzan (CW Driver)</option>
 <option value="Matt Lulling">Matt Lulling (OCMI)</option>
+<option value="__other__">Other</option>
 </select>
+<input type="text" id="iNameOther" class="field-input" placeholder="Enter your name" style="display:none;">
 <label class="field-label">Notes</label>
 <textarea id="iNotes" class="field-input" rows="3" placeholder="Optional — any additional details" style="resize:vertical;"></textarea>
 <label class="field-label">Send a copy to:</label>
@@ -138,14 +186,17 @@ select.field-input{background:#fff;}
 </div>
 <script>
 var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
+var PROJ='CSUSM';
 var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
-var photoFile=null,inspType='';
+var photoFile=null,inspType='',inspDur='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
-var mD={},selDate=null;
-var TIMES=['05:00','05:30','06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+var mD={},selDate=null,allEvents=[];
+var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
 function pad(n){return String(n).padStart(2,'0');}
 function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
+function fmtDate(s){var p=s.split('-');var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));return DN[dt.getDay()]+' '+parseInt(p[1])+'.'+parseInt(p[2])+'.'+p[0].substring(2);}
 function switchTab(t){
 document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
@@ -154,10 +205,9 @@ document.getElementById('requestView').style.display=t==='request'?'block':'none
 }
 function changeMonth(dir){
 cM+=dir;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}
-selDate=null;document.getElementById('timelineWrap').style.display='none';loadMD();
+selDate=null;document.getElementById('dayDetail').style.display='none';loadMD();
 }
 function renderCal(){
-var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 document.getElementById('monthLabel').textContent=MN[cM]+' '+cY;
 var g=document.getElementById('calGrid');g.innerHTML='';
 var f=new Date(cY,cM,1),ld=new Date(cY,cM+1,0).getDate(),sd=f.getDay(),today=new Date();
@@ -169,46 +219,126 @@ c.className='day-cell';
 if(d===today.getDate()&&cM===today.getMonth()&&cY===today.getFullYear())c.className+=' today';
 if(s===selDate)c.className+=' selected';
 c.innerHTML='<span class="day-num">'+d+'</span>';
-if(mD[s]&&mD[s].length>0)c.innerHTML+='<div class="day-dot"></div>';
-c.onclick=(function(x){return function(){selDate=x;renderCal();showTL(x);};})(s);
+if(mD[s]&&mD[s].length>0){
+var visible=mD[s].filter(function(ev){
+var isSpecial=(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;
+return ev.project===PROJ||!isSpecial;
+});
+var hasOwn=visible.some(function(ev){return ev.project===PROJ;});
+var hasOther=visible.some(function(ev){return ev.project!==PROJ;});
+var total=visible.length;
+if(total>=3){
+c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;text-align:center;margin-top:3px;font-weight:700;">'+total+'</div>';
+}else if(hasOwn&&hasOther){
+c.innerHTML+='<div style="padding:0 2px;margin-top:3px;"><div class="day-dot" style="background:#e8742a"></div><div class="day-dot" style="background:#5a8fc0"></div></div>';
+}else if(hasOwn){
+c.innerHTML+='<div class="day-dot" style="background:#1a5276"></div>';
+}else if(hasOther){
+c.innerHTML+='<div class="day-dot" style="background:#5a8fc0"></div>';
+}
+}
+c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
 g.appendChild(c);
 }
 var rem=(sd+ld)%7;if(rem>0)for(var i=1;i<=7-rem;i++){var c=document.createElement('div');c.className='day-cell other-month';c.innerHTML='<span class="day-num">'+i+'</span>';g.appendChild(c);}
 }
-function showTL(d){
-var w=document.getElementById('timelineWrap'),h=document.getElementById('timelineDate'),sl=document.getElementById('timelineSlots');
-var p=d.split('-'),DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
-var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-h.textContent=DN[dt.getDay()]+', '+MN[dt.getMonth()]+' '+dt.getDate();
-var evts=mD[d]||[],em={};
-evts.forEach(function(e){var k=e.inspection_time.substring(0,5);if(!em[k])em[k]=[];em[k].push(e);});
-sl.innerHTML='';
-if(evts.length===0){sl.innerHTML='<div class="no-events">No inspections — day is open</div>';}
-else{
-TIMES.forEach(function(t){
-var s=document.createElement('div');s.className='time-slot';
-var tc=document.createElement('div');tc.className='time-content';
-s.innerHTML='<div class="time-label">'+fmt(t)+'</div>';
-if(em[t]){
-em[t].forEach(function(e){
-var ty=(e.inspection_types||[]).join(', ');
-var who=e.submitted_by||e.gc||'';
-var detail=e.project+' — '+ty+(who?' — '+who:'');
-if(e.notes)detail+='<br><span style="font-size:10px;opacity:0.85;">'+e.notes+'</span>';
-tc.innerHTML+='<div class="event-block'+(ty.toLowerCase().indexOf('special')>=0?' special':'')+'">'+detail+'</div>';
+function showDay(d){
+var wrap=document.getElementById('dayDetail');
+var header=document.getElementById('dayDetailHeader');
+var list=document.getElementById('dayDetailList');
+header.textContent=fmtDate(d);
+var evts=mD[d]||[];
+if(evts.length===0){
+list.innerHTML='<div class="no-events">No inspections scheduled</div>';
+}else{
+var html='';
+evts.forEach(function(e){
+var ty=(e.inspection_types||[]).join(', ')||'IOR';
+var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'IOR';
+if(e.project!==PROJ&&tyShort==='Special')return;
+var isCancelled=(e.status==='cancelled');
+html+='<div class="evt-row'+(isCancelled?' evt-cancelled':'')+'">';
+var timeDisplay=e.flexible_display==='flexible'?'Flexible':fmt(e.inspection_time.substring(0,5));
+html+='<span class="evt-time">'+timeDisplay+'</span>';
+html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
+if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
+if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
+if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
+if(!isCancelled&&e.project===PROJ){
+html+='<div class="evt-actions">';
+html+='<button class="btn-edit" onclick="editInsp(\''+e.id+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Edit</button>';
+html+='<button class="btn-cancel" onclick="cancelInsp(\''+e.id+'\',\''+e.project+'\',\''+tyShort+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Cancel</button>';
+html+='</div>';
+}
+html+='</div>';
+});
+list.innerHTML=html;
+}
+wrap.style.display='block';
+}
+function getTeamNames(){var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value&&o.value!=='__other__')names.push(o.value);});return names;}
+function showActionModal(title,names,callback){
+var overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;';
+var box=document.createElement('div');
+box.style.cssText='background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;width:280px;';
+var h=document.createElement('div');
+h.style.cssText='font-size:14px;font-weight:bold;color:#fff;margin-bottom:12px;';
+h.textContent=title;
+box.appendChild(h);
+names.forEach(function(n){
+var btn=document.createElement('button');
+btn.style.cssText='display:block;width:100%;padding:12px;margin-bottom:8px;font-size:14px;font-weight:600;color:#fff;background:#222;border:1px solid #444;border-radius:6px;cursor:pointer;text-align:left;';
+btn.textContent=n;
+btn.onclick=function(){document.body.removeChild(overlay);callback(n);};
+box.appendChild(btn);
+});
+var cancel=document.createElement('button');
+cancel.style.cssText='display:block;width:100%;padding:10px;font-size:13px;color:#888;background:transparent;border:1px solid #333;border-radius:6px;cursor:pointer;margin-top:4px;';
+cancel.textContent='Never mind';
+cancel.onclick=function(){document.body.removeChild(overlay);};
+box.appendChild(cancel);
+overlay.appendChild(box);
+document.body.appendChild(overlay);
+}
+function cancelInsp(id,proj,ty,date,time){
+showActionModal('Who is cancelling this inspection?',getTeamNames(),function(who){
+var reason=prompt('Reason for cancellation (optional):');
+fetch(SB+'/functions/v1/update-inspection',{
+method:'POST',
+headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
+body:JSON.stringify({request_id:id,action:'cancel',action_by:who,reason:reason||''})
+}).then(function(r){return r.json();}).then(function(data){
+if(data.success){alert('Inspection cancelled.');loadMD();}
+else{alert('Error: '+(data.error||'Unknown'));}
+}).catch(function(){alert('Connection error.');});
 });
 }
-s.appendChild(tc);sl.appendChild(s);
+function editInsp(id,oldDate,oldTime){
+showActionModal('Who is editing this inspection?',getTeamNames(),function(who){
+var newDate=prompt('New date (YYYY-MM-DD):',oldDate);
+if(!newDate)return;
+var newTime=prompt('New time (HH:MM, 24hr format):',oldTime);
+if(!newTime)return;
+var reason=prompt('Reason for change (optional):');
+fetch(SB+'/functions/v1/update-inspection',{
+method:'POST',
+headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
+body:JSON.stringify({request_id:id,action:'edit',action_by:who,new_date:newDate,new_time:newTime,reason:reason||''})
+}).then(function(r){return r.json();}).then(function(data){
+if(data.success){alert('Inspection updated.');loadMD();}
+else{alert('Error: '+(data.error||'Unknown'));}
+}).catch(function(){alert('Connection error.');});
 });
-}
-w.style.display='block';
 }
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
-mD={};data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});renderCal();
+mD={};allEvents=data;
+data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});
+renderCal();
 }).catch(function(){renderCal();});
 }
 function showPhoto(input){
@@ -226,15 +356,25 @@ var r=new FileReader();r.onload=function(e){document.getElementById('photoPrevie
 }
 }
 }
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='Regular');}
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
+function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
+function toggleOtherName(){var s=document.getElementById('iName');document.getElementById('iNameOther').style.display=s.value==='__other__'?'block':'none';}
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
-if(!photoFile||!d||!t||!inspType||!nm){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+if(nm==='__other__')nm=document.getElementById('iNameOther').value.trim();
+var isFlexible=(t==='flexible');
+if(isFlexible)t='07:00';
+if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+var specType=document.getElementById('specialType').value;
+if(inspType==='Special'&&!specType){alert('Please select a Special Inspection Type.');return;}
 var emails=[];document.querySelectorAll('.emailCheck:checked').forEach(function(cb){emails.push(cb.value);});
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
 fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','CSUSM');fd.append('gc','CW Driver');
-fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));
+fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
+if(isFlexible)fd.append('flexible','true');
+if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
+if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
 if(emails.length>0){fd.append('email_recipients',JSON.stringify(emails));}
@@ -246,7 +386,7 @@ document.getElementById('tabBar').style.display='none';document.getElementById('
 if(emails.length>0){document.getElementById('emailNote').textContent='Copy emailed to '+emails.length+' recipient'+(emails.length>1?'s':'')+'.';document.getElementById('emailNote').style.display='block';}
 }else if(data.conflict_project){
 var msg='That time is already booked.\n\n';
-if(data.day_schedule&&data.day_schedule.length>0){data.day_schedule.forEach(function(s){msg+=fmt(s.inspection_time)+' — '+s.project+' ('+(s.inspection_types||[]).join(', ')+')\n';});}
+if(data.day_schedule&&data.day_schedule.length>0){data.day_schedule.forEach(function(s){msg+=fmt(s.inspection_time.substring(0,5))+' — '+s.project+' ('+(s.inspection_types||[]).join(', ')+')\n';});}
 msg+='\nPlease pick a different time.';alert(msg);btn.textContent='Submit Inspection Request';btn.disabled=false;
 }else{alert('Error: '+(data.error||'Unknown error'));btn.textContent='Submit Inspection Request';btn.disabled=false;}
 }).catch(function(){alert('Connection error.');btn.textContent='Submit Inspection Request';btn.disabled=false;});
@@ -258,10 +398,10 @@ document.getElementById('photoPreview').style.display='none';document.getElement
 document.getElementById('photoPrompt').style.display='block';document.getElementById('photoBox').classList.remove('has-file');
 document.getElementById('photoIn').value='';document.getElementById('submitBtn').textContent='Submit Inspection Request';document.getElementById('submitBtn').disabled=false;
 document.getElementById('btnSpecial').classList.remove('active');document.getElementById('btnRegular').classList.remove('active');
+document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-inspType='';photoFile=null;
-document.getElementById('iName').value='';document.getElementById('iNotes').value='';
-loadMD();
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';inspType='';inspDur='';photoFile=null;loadMD();
+document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
 </script>
