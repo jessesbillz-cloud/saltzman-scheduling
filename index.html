@@ -30,10 +30,10 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-detail-header{font-size:13px;font-weight:bold;color:#333;margin-bottom:8px;}
 .evt-row{padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;}
 .evt-row:last-child{border-bottom:none;}
-.evt-time{font-weight:600;color:#c4451c;}
-.evt-type{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;margin-left:6px;}
-.evt-type.regular{background:#e8f5e9;color:#2e7d32;}
-.evt-type.special{background:#fff3e0;color:#e65100;}
+.evt-time{font-weight:600;}
+.evt-time.wpms{color:#c4451c;}
+.evt-time.csusm{color:#1a5276;}
+.evt-type{font-size:11px;font-weight:600;margin-left:4px;color:#666;}
 .evt-who{color:#666;font-size:12px;}
 .evt-notes{color:#888;font-size:11px;font-style:italic;margin-top:2px;}
 .no-events{color:#999;font-size:12px;padding:4px 0;}
@@ -192,9 +192,14 @@ if(d===today.getDate()&&cM===today.getMonth()&&cY===today.getFullYear())c.classN
 if(s===selDate)c.className+=' selected';
 c.innerHTML='<span class="day-num">'+d+'</span>';
 if(mD[s]&&mD[s].length>0){
-var hasSpecial=mD[s].some(function(ev){return(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;});
-var dotColor=hasSpecial?'#e8a838':'#c4451c';
+var hasWPMS=mD[s].some(function(ev){return ev.project==='WPMS';});
+var hasCSUSM=mD[s].some(function(ev){return ev.project==='CSUSM';});
+if(hasWPMS&&hasCSUSM){
+c.innerHTML+='<div style="display:flex;justify-content:center;gap:3px;margin-top:2px;"><div class="day-dot" style="background:#c4451c"></div><div class="day-dot" style="background:#1a5276"></div></div>';
+}else{
+var dotColor=hasWPMS?'#c4451c':'#1a5276';
 c.innerHTML+='<div class="day-dot" style="background:'+dotColor+'"></div>';
+}
 }
 c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
 g.appendChild(c);
@@ -212,12 +217,12 @@ list.innerHTML='<div class="no-events">No inspections scheduled</div>';
 }else{
 var html='';
 evts.forEach(function(e){
-var ty=(e.inspection_types||[]).join(', ')||'Inspection';
-var tyClass=ty.toLowerCase().indexOf('special')>=0?'special':'regular';
+var ty=(e.inspection_types||[]).join(', ')||'Regular';
+var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
+var pClass=e.project==='WPMS'?'wpms':'csusm';
 html+='<div class="evt-row">';
-html+='<span class="evt-time">'+fmt(e.inspection_time.substring(0,5))+'</span>';
-html+=' — '+e.project;
-html+='<span class="evt-type '+tyClass+'">'+ty+'</span>';
+html+='<span class="evt-time '+pClass+'">'+fmt(e.inspection_time.substring(0,5))+'</span>';
+html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
 if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
 if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
 html+='</div>';
@@ -253,12 +258,12 @@ var html='';
 dates.forEach(function(d){
 html+='<div class="log-date">'+fmtDate(d)+'</div>';
 byDate[d].forEach(function(ev){
-var ty=(ev.inspection_types||[]).join(', ')||'Inspection';
-var tyClass=ty.toLowerCase().indexOf('special')>=0?'special':'regular';
+var ty=(ev.inspection_types||[]).join(', ')||'Regular';
+var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
+var pClass=ev.project==='WPMS'?'wpms':'csusm';
 html+='<div class="log-item">';
-html+='<span class="evt-time">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
-html+=' — '+ev.project;
-html+='<span class="evt-type '+tyClass+'">'+ty+'</span>';
+html+='<span class="evt-time '+pClass+'">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
+html+=' — '+ev.project+' — <span class="evt-type">'+tyShort+'</span>';
 if(ev.submitted_by)html+=' — '+ev.submitted_by;
 if(ev.notes)html+='<div class="evt-notes">'+ev.notes+'</div>';
 html+='</div>';
