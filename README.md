@@ -107,96 +107,13 @@ Teams cannot see:
 - Construction GCs managing state projects
 - Special inspection companies (CWI, soils, concrete, etc.)
 
-## Setup Instructions
 
-### 1. Database Setup
-```sql
--- Create tables in Supabase
-CREATE TABLE inspection_requests (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  project text NOT NULL,
-  inspection_date date NOT NULL,
-  inspection_time time NOT NULL,
-  inspection_types jsonb DEFAULT '[]',
-  special_type text,
-  duration text,
-  flexible boolean DEFAULT false,
-  flexible_display text,
-  gc text,
-  subcontractor text DEFAULT '',
-  location_detail text DEFAULT '',
-  submitted_by text,
-  notes text DEFAULT '',
-  status text DEFAULT 'active',
-  created_at timestamptz DEFAULT now()
-);
 
-CREATE TABLE inspection_log (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  request_id uuid REFERENCES inspection_requests(id),
-  action text NOT NULL,
-  action_by text NOT NULL,
-  details text DEFAULT '',
-  created_at timestamptz DEFAULT now()
-);
+
+
 ```
 
-### 2. Environment Variables
-```bash
-# Supabase
-SUPABASE_URL=your-project-url
-SUPABASE_SERVICE_ROLE_KEY=your-service-key
 
-# Email (Resend)
-RESEND_API_KEY=your-resend-key
-
-# Notifications (Ntfy)
-NTFY_TOPIC=your-topic-name
-```
-
-### 3. Deploy Edge Functions
-Deploy `submit-inspection` and `update-inspection` functions to Supabase.
-
-### 4. Configure Notifications
-- **Email**: Verify domain in Resend
-- **Push**: Set up Ntfy topic for `saltzman-vis-alerts`
-
-## API Endpoints
-
-### Submit Inspection
-```
-POST /functions/v1/submit-inspection
-Content-Type: multipart/form-data
-
-{
-  photo: File,
-  project: string,
-  inspection_date: string,
-  inspection_time: string,
-  inspection_types: string[], // JSON
-  special_type?: string,
-  duration: string,
-  flexible?: boolean,
-  submitted_by: string,
-  notes?: string,
-  email_recipients?: string[], // JSON
-  skip_conflict?: boolean
-}
-```
-
-### Update Inspection  
-```
-POST /functions/v1/update-inspection
-Content-Type: application/json
-
-{
-  request_id: string,
-  action: "edit" | "cancel",
-  action_by: string,
-  new_date?: string,
-  new_time?: string,
-  reason?: string
-}
 ```
 
 ## Contributing
