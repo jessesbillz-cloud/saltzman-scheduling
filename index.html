@@ -42,12 +42,6 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .evt-who{color:#888;font-size:12px;margin-top:2px;}
 .evt-notes{color:#666;font-size:11px;font-style:italic;margin-top:2px;}
 .no-events{color:#555;font-size:12px;padding:4px 0;}
-.log-section{padding:14px;}
-.log-title{font-size:14px;font-weight:bold;color:#fff;}
-.log-date{font-size:13px;font-weight:600;color:#fff;padding:8px 0 4px;border-bottom:1px solid #333;}
-.log-item{padding:6px 0 6px 12px;border-bottom:1px solid #222;font-size:13px;color:#fff;}
-.log-item:last-child{border-bottom:none;}
-.log-empty{color:#555;font-size:13px;padding:8px 0;}
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
@@ -98,22 +92,6 @@ select.field-input{background:#222;color:#fff;}
 <div id="dayDetailList"></div>
 </div>
 </div>
-<div class="card">
-<div class="log-section">
-<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="toggleLog()">
-<strong class="log-title" style="flex:1;">Weekly Log</strong>
-<span id="logToggle" style="color:#888;font-size:18px;">&#9654;</span>
-</div>
-<div id="logWrap" style="display:none;margin-top:10px;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-<button onclick="event.stopPropagation();changeWeek(-1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#888;">&larr;</button>
-<strong class="log-title" id="weekLabel" style="font-size:13px;"></strong>
-<button onclick="event.stopPropagation();changeWeek(1)" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#888;">&rarr;</button>
-</div>
-<div id="logList"></div>
-</div>
-</div>
-</div>
 </div>
 <div id="requestView" class="form-wrap">
 <label class="field-label">Photo or PDF of Inspection Request *</label>
@@ -154,7 +132,7 @@ select.field-input{background:#222;color:#fff;}
 <label class="field-label">Inspection Type *</label>
 <div class="type-btns">
 <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
-<div class="type-btn" id="btnRegular" onclick="setType('Regular')">Regular</div>
+<div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
 </div>
 <div class="special-sub" id="specialSub">
 <label class="field-label">Special Inspection Type *</label>
@@ -169,12 +147,14 @@ select.field-input{background:#222;color:#fff;}
 </select>
 </div>
 <label class="field-label">Submitted By *</label>
-<select id="iName" class="field-input">
+<select id="iName" class="field-input" onchange="toggleOtherName()">
 <option value="">Select your name</option>
 <option value="Ron Davis">Ron Davis (Lusardi)</option>
 <option value="Scuyler Lindgren">Scuyler Lindgren (Lusardi)</option>
 <option value="Alejandro Jimenez">Alejandro Jimenez (SOCOTEC)</option>
+<option value="__other__">Other</option>
 </select>
+<input type="text" id="iNameOther" class="field-input" placeholder="Enter your name" style="display:none;">
 <label class="field-label">Notes</label>
 <textarea id="iNotes" class="field-input" rows="3" placeholder="Optional — any additional details" style="resize:vertical;"></textarea>
 <label class="field-label">Send a copy to:</label>
@@ -200,7 +180,6 @@ var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV
 var photoFile=null,inspType='',inspDur='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={},selDate=null,allEvents=[];
-var weekOffset=0;
 var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
@@ -264,8 +243,8 @@ list.innerHTML='<div class="no-events">No inspections scheduled</div>';
 }else{
 var html='';
 evts.forEach(function(e){
-var ty=(e.inspection_types||[]).join(', ')||'Regular';
-var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
+var ty=(e.inspection_types||[]).join(', ')||'IOR';
+var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'IOR';
 if(e.project!==PROJ&&tyShort==='Special')return;
 var isCancelled=(e.status==='cancelled');
 html+='<div class="evt-row'+(isCancelled?' evt-cancelled':'')+'">';
@@ -286,57 +265,7 @@ list.innerHTML=html;
 }
 wrap.style.display='block';
 }
-function changeWeek(dir){weekOffset+=dir;loadWeekLog();}
-function toggleLog(){
-var w=document.getElementById('logWrap');
-var t=document.getElementById('logToggle');
-if(w.style.display==='none'){w.style.display='block';t.innerHTML='&#9660;';loadWeekLog();}
-else{w.style.display='none';t.innerHTML='&#9654;';}
-}
-function getWeekRange(){
-var today=new Date();today.setHours(0,0,0,0);
-var dayOfWeek=today.getDay();
-var start=new Date(today);start.setDate(today.getDate()-dayOfWeek+(weekOffset*7));
-var end=new Date(start);end.setDate(start.getDate()+6);
-return{start:start,end:end};
-}
-function loadWeekLog(){
-var log=document.getElementById('logList');
-var wk=getWeekRange();
-var s=wk.start,e=wk.end;
-var sStr=s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
-var eStr=e.getFullYear()+'-'+pad(e.getMonth()+1)+'-'+pad(e.getDate());
-document.getElementById('weekLabel').textContent=MN[s.getMonth()]+' '+s.getDate()+' — '+MN[e.getMonth()]+' '+e.getDate();
-log.innerHTML='<div class="log-empty" style="color:#999;">Loading...</div>';
-fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status&inspection_date=gte.'+sStr+'&inspection_date=lte.'+eStr+'&order=inspection_date,inspection_time',{
-headers:{'apikey':AK,'Authorization':'Bearer '+AK}
-}).then(function(r){return r.json();}).then(function(data){
-if(data.length===0){log.innerHTML='<div class="log-empty">No inspections this week</div>';return;}
-var byDate={};
-data.forEach(function(ev){if(!byDate[ev.inspection_date])byDate[ev.inspection_date]=[];byDate[ev.inspection_date].push(ev);});
-var dates=Object.keys(byDate).sort();
-var html='';
-dates.forEach(function(d){
-html+='<div class="log-date">'+fmtDate(d)+'</div>';
-byDate[d].forEach(function(ev){
-var ty=(ev.inspection_types||[]).join(', ')||'Regular';
-var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
-if(ev.project!==PROJ&&tyShort==='Special')return;
-var isCancelled=(ev.status==='cancelled');
-html+='<div class="log-item'+(isCancelled?' evt-cancelled':'')+'">';
-html+='<span class="evt-time">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
-html+=' — '+ev.project+' — <span class="evt-type">'+tyShort+'</span>';
-if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
-if(ev.submitted_by)html+=' — '+ev.submitted_by;
-if(ev.notes)html+='<div class="evt-notes">'+ev.notes+'</div>';
-html+='</div>';
-});
-});
-log.innerHTML=html;
-}).catch(function(){log.innerHTML='<div class="log-empty">Could not load</div>';});
-}
-function renderLog(){loadWeekLog();}
-function getTeamNames(){var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});return names;}
+function getTeamNames(){var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value&&o.value!=='__other__')names.push(o.value);});return names;}
 function showActionModal(title,names,callback){
 var overlay=document.createElement('div');
 overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;';
@@ -398,7 +327,7 @@ headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
 mD={};allEvents=data;
 data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});
-renderCal();renderLog();
+renderCal();
 }).catch(function(){renderCal();});
 }
 function showPhoto(input){
@@ -416,10 +345,12 @@ var r=new FileReader();r.onload=function(e){document.getElementById('photoPrevie
 }
 }
 }
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='Regular');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
+function toggleOtherName(){var s=document.getElementById('iName');document.getElementById('iNameOther').style.display=s.value==='__other__'?'block':'none';}
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
+if(nm==='__other__')nm=document.getElementById('iNameOther').value.trim();
 var isFlexible=(t==='flexible');
 if(isFlexible)t='07:00';
 if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
@@ -431,6 +362,7 @@ var fd=new FormData();
 fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
 if(isFlexible)fd.append('flexible','true');
+if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
@@ -457,8 +389,7 @@ document.getElementById('photoIn').value='';document.getElementById('submitBtn')
 document.getElementById('btnSpecial').classList.remove('active');document.getElementById('btnRegular').classList.remove('active');
 document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';
-inspType='';inspDur='';photoFile=null;loadMD();
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';inspType='';inspDur='';photoFile=null;loadMD();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
