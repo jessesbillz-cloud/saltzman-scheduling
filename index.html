@@ -300,10 +300,33 @@ log.innerHTML=html;
 }).catch(function(){log.innerHTML='<div class="log-empty">Could not load</div>';});
 }
 function renderLog(){loadWeekLog();}
+function getTeamNames(){var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});return names;}
+function showActionModal(title,names,callback){
+var overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;';
+var box=document.createElement('div');
+box.style.cssText='background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;width:280px;';
+var h=document.createElement('div');
+h.style.cssText='font-size:14px;font-weight:bold;color:#fff;margin-bottom:12px;';
+h.textContent=title;
+box.appendChild(h);
+names.forEach(function(n){
+var btn=document.createElement('button');
+btn.style.cssText='display:block;width:100%;padding:12px;margin-bottom:8px;font-size:14px;font-weight:600;color:#fff;background:#222;border:1px solid #444;border-radius:6px;cursor:pointer;text-align:left;';
+btn.textContent=n;
+btn.onclick=function(){document.body.removeChild(overlay);callback(n);};
+box.appendChild(btn);
+});
+var cancel=document.createElement('button');
+cancel.style.cssText='display:block;width:100%;padding:10px;font-size:13px;color:#888;background:transparent;border:1px solid #333;border-radius:6px;cursor:pointer;margin-top:4px;';
+cancel.textContent='Never mind';
+cancel.onclick=function(){document.body.removeChild(overlay);};
+box.appendChild(cancel);
+overlay.appendChild(box);
+document.body.appendChild(overlay);
+}
 function cancelInsp(id,proj,ty,date,time){
-var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});
-var who=prompt('Who is cancelling this inspection?\\n\\n'+names.join('\\n')+'\\n\\nType your name:');
-if(!who)return;
+showActionModal('Who is cancelling this inspection?',getTeamNames(),function(who){
 var reason=prompt('Reason for cancellation (optional):');
 fetch(SB+'/functions/v1/update-inspection',{
 method:'POST',
@@ -313,11 +336,10 @@ body:JSON.stringify({request_id:id,action:'cancel',action_by:who,reason:reason||
 if(data.success){alert('Inspection cancelled.');loadMD();}
 else{alert('Error: '+(data.error||'Unknown'));}
 }).catch(function(){alert('Connection error.');});
+});
 }
 function editInsp(id,oldDate,oldTime){
-var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});
-var who=prompt('Who is editing this inspection?\\n\\n'+names.join('\\n')+'\\n\\nType your name:');
-if(!who)return;
+showActionModal('Who is editing this inspection?',getTeamNames(),function(who){
 var newDate=prompt('New date (YYYY-MM-DD):',oldDate);
 if(!newDate)return;
 var newTime=prompt('New time (HH:MM, 24hr format):',oldTime);
@@ -331,6 +353,7 @@ body:JSON.stringify({request_id:id,action:'edit',action_by:who,new_date:newDate,
 if(data.success){alert('Inspection updated.');loadMD();}
 else{alert('Error: '+(data.error||'Unknown'));}
 }).catch(function(){alert('Connection error.');});
+});
 }
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
