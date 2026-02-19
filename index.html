@@ -404,6 +404,8 @@ function setType(t){inspType=t;document.getElementById('btnSpecial').classList.t
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
+var isFlexible=(t==='flexible');
+if(isFlexible)t='07:00';
 if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
 var specType=document.getElementById('specialType').value;
 if(inspType==='Special'&&!specType){alert('Please select a Special Inspection Type.');return;}
@@ -412,6 +414,7 @@ var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn
 var fd=new FormData();
 fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
+if(isFlexible)fd.append('flexible','true');
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
