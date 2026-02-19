@@ -34,6 +34,13 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .evt-time.wpms{color:#c4451c;}
 .evt-time.csusm{color:#1a5276;}
 .evt-type{font-size:11px;font-weight:600;margin-left:4px;color:#666;}
+.evt-actions{margin-top:4px;}
+.evt-actions button{font-size:11px;padding:3px 10px;margin-right:6px;border-radius:4px;border:1px solid #ccc;background:#fff;cursor:pointer;}
+.evt-actions .btn-edit{color:#1a5276;border-color:#1a5276;}
+.evt-actions .btn-cancel{color:#c44;border-color:#c44;}
+.evt-cancelled{opacity:0.5;}
+.evt-cancelled .evt-time,.evt-cancelled .evt-type{text-decoration:line-through;}
+.cancelled-label{font-size:10px;color:#c44;font-weight:600;margin-left:6px;}
 .evt-who{color:#666;font-size:12px;}
 .evt-notes{color:#888;font-size:11px;font-style:italic;margin-top:2px;}
 .no-events{color:#999;font-size:12px;padding:4px 0;}
@@ -220,11 +227,19 @@ evts.forEach(function(e){
 var ty=(e.inspection_types||[]).join(', ')||'Regular';
 var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
 var pClass=e.project==='WPMS'?'wpms':'csusm';
-html+='<div class="evt-row">';
+var isCancelled=(e.status==='cancelled');
+html+='<div class="evt-row'+(isCancelled?' evt-cancelled':'')+'">';
 html+='<span class="evt-time '+pClass+'">'+fmt(e.inspection_time.substring(0,5))+'</span>';
 html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
+if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
 if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
 if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
+if(!isCancelled){
+html+='<div class="evt-actions">';
+html+='<button class="btn-edit" onclick="editInsp(\''+e.id+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Edit</button>';
+html+='<button class="btn-cancel" onclick="cancelInsp(\''+e.id+'\',\''+e.project+'\',\''+tyShort+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Cancel</button>';
+html+='</div>';
+}
 html+='</div>';
 });
 list.innerHTML=html;
@@ -247,7 +262,7 @@ var sStr=s.getFullYear()+'-'+pad(s.getMonth()+1)+'-'+pad(s.getDate());
 var eStr=e.getFullYear()+'-'+pad(e.getMonth()+1)+'-'+pad(e.getDate());
 document.getElementById('weekLabel').textContent=MN[s.getMonth()]+' '+s.getDate()+' — '+MN[e.getMonth()]+' '+e.getDate();
 log.innerHTML='<div class="log-empty" style="color:#999;">Loading...</div>';
-fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+sStr+'&inspection_date=lte.'+eStr+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status&inspection_date=gte.'+sStr+'&inspection_date=lte.'+eStr+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
 if(data.length===0){log.innerHTML='<div class="log-empty">No inspections this week</div>';return;}
@@ -261,9 +276,11 @@ byDate[d].forEach(function(ev){
 var ty=(ev.inspection_types||[]).join(', ')||'Regular';
 var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
 var pClass=ev.project==='WPMS'?'wpms':'csusm';
-html+='<div class="log-item">';
+var isCancelled=(ev.status==='cancelled');
+html+='<div class="log-item'+(isCancelled?' evt-cancelled':'')+'">';
 html+='<span class="evt-time '+pClass+'">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
 html+=' — '+ev.project+' — <span class="evt-type">'+tyShort+'</span>';
+if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
 if(ev.submitted_by)html+=' — '+ev.submitted_by;
 if(ev.notes)html+='<div class="evt-notes">'+ev.notes+'</div>';
 html+='</div>';
@@ -273,9 +290,41 @@ log.innerHTML=html;
 }).catch(function(){log.innerHTML='<div class="log-empty">Could not load</div>';});
 }
 function renderLog(){loadWeekLog();}
+function cancelInsp(id,proj,ty,date,time){
+var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});
+var who=prompt('Who is cancelling this inspection?\\n\\n'+names.join('\\n')+'\\n\\nType your name:');
+if(!who)return;
+var reason=prompt('Reason for cancellation (optional):');
+fetch(SB+'/functions/v1/update-inspection',{
+method:'POST',
+headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
+body:JSON.stringify({request_id:id,action:'cancel',action_by:who,reason:reason||''})
+}).then(function(r){return r.json();}).then(function(data){
+if(data.success){alert('Inspection cancelled.');loadMD();}
+else{alert('Error: '+(data.error||'Unknown'));}
+}).catch(function(){alert('Connection error.');});
+}
+function editInsp(id,oldDate,oldTime){
+var names=[];document.querySelectorAll('#iName option').forEach(function(o){if(o.value)names.push(o.value);});
+var who=prompt('Who is editing this inspection?\\n\\n'+names.join('\\n')+'\\n\\nType your name:');
+if(!who)return;
+var newDate=prompt('New date (YYYY-MM-DD):',oldDate);
+if(!newDate)return;
+var newTime=prompt('New time (HH:MM, 24hr format):',oldTime);
+if(!newTime)return;
+var reason=prompt('Reason for change (optional):');
+fetch(SB+'/functions/v1/update-inspection',{
+method:'POST',
+headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
+body:JSON.stringify({request_id:id,action:'edit',action_by:who,new_date:newDate,new_time:newTime,reason:reason||''})
+}).then(function(r){return r.json();}).then(function(data){
+if(data.success){alert('Inspection updated.');loadMD();}
+else{alert('Error: '+(data.error||'Unknown'));}
+}).catch(function(){alert('Connection error.');});
+}
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-fetch(SB+'/rest/v1/inspection_requests?select=inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){return r.json();}).then(function(data){
 mD={};allEvents=data;
