@@ -57,6 +57,9 @@ select.field-input{background:#222;color:#fff;}
 .type-btns{display:flex;gap:8px;margin-bottom:14px;}
 .type-btn{flex:1;padding:12px;font-size:14px;font-weight:bold;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;}
 .type-btn.active{background:#e8742a;color:#fff;border-color:#e8742a;}
+.dur-btns{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.dur-btn{padding:10px 0;font-size:13px;font-weight:600;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;flex:1;min-width:55px;}
+.dur-btn.active{background:#e8742a;color:#fff;border-color:#e8742a;}
 .special-sub{display:none;margin-bottom:14px;}
 .special-sub.show{display:block;}
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
@@ -119,6 +122,7 @@ select.field-input{background:#222;color:#fff;}
 <label class="field-label">Inspection Time *</label>
 <select id="iTime" class="field-input">
 <option value="">Select time</option>
+<option value="flexible">Flexible — anytime today</option>
 <option value="05:00">5:00 AM</option><option value="05:30">5:30 AM</option>
 <option value="06:00">6:00 AM</option><option value="06:30">6:30 AM</option>
 <option value="07:00">7:00 AM</option><option value="07:30">7:30 AM</option>
@@ -133,6 +137,14 @@ select.field-input{background:#222;color:#fff;}
 <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
 <option value="17:00">5:00 PM</option>
 </select>
+<label class="field-label">Duration *</label>
+<div class="dur-btns" id="durBtns">
+<div class="dur-btn" onclick="setDur('30')">30 min</div>
+<div class="dur-btn" onclick="setDur('60')">1 hr</div>
+<div class="dur-btn" onclick="setDur('120')">2 hr</div>
+<div class="dur-btn" onclick="setDur('240')">4 hr</div>
+<div class="dur-btn" onclick="setDur('480')">All Day</div>
+</div>
 <label class="field-label">Inspection Type *</label>
 <div class="type-btns">
 <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
@@ -179,7 +191,7 @@ select.field-input{background:#222;color:#fff;}
 var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
 var PROJ='WPMS';
 var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
-var photoFile=null,inspType='';
+var photoFile=null,inspType='',inspDur='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={},selDate=null,allEvents=[];
 var weekOffset=0;
@@ -212,13 +224,18 @@ if(d===today.getDate()&&cM===today.getMonth()&&cY===today.getFullYear())c.classN
 if(s===selDate)c.className+=' selected';
 c.innerHTML='<span class="day-num">'+d+'</span>';
 if(mD[s]&&mD[s].length>0){
-var hasWPMS=mD[s].some(function(ev){return ev.project==='WPMS';});
-var hasCSUSM=mD[s].some(function(ev){return ev.project==='CSUSM';});
-if(hasWPMS&&hasCSUSM){
-c.innerHTML+='<div style="display:flex;justify-content:center;gap:3px;margin-top:2px;"><div class="day-dot" style="background:#c4451c"></div><div class="day-dot" style="background:#1a5276"></div></div>';
-}else{
-var dotColor=hasWPMS?'#c4451c':'#1a5276';
-c.innerHTML+='<div class="day-dot" style="background:'+dotColor+'"></div>';
+var visible=mD[s].filter(function(ev){
+var isSpecial=(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;
+return ev.project===PROJ||!isSpecial;
+});
+var hasOwn=visible.some(function(ev){return ev.project===PROJ;});
+var hasOther=visible.some(function(ev){return ev.project!==PROJ;});
+if(hasOwn&&hasOther){
+c.innerHTML+='<div style="display:flex;justify-content:center;gap:3px;margin-top:2px;"><div class="day-dot" style="background:#e8742a"></div><div class="day-dot" style="background:#5a8fc0"></div></div>';
+}else if(hasOwn){
+c.innerHTML+='<div class="day-dot" style="background:#e8742a"></div>';
+}else if(hasOther){
+c.innerHTML+='<div class="day-dot" style="background:#5a8fc0"></div>';
 }
 }
 c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
@@ -239,6 +256,7 @@ var html='';
 evts.forEach(function(e){
 var ty=(e.inspection_types||[]).join(', ')||'Regular';
 var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
+if(e.project!==PROJ&&tyShort==='Special')return;
 var isCancelled=(e.status==='cancelled');
 html+='<div class="evt-row'+(isCancelled?' evt-cancelled':'')+'">';
 html+='<span class="evt-time">'+fmt(e.inspection_time.substring(0,5))+'</span>';
@@ -287,6 +305,7 @@ html+='<div class="log-date">'+fmtDate(d)+'</div>';
 byDate[d].forEach(function(ev){
 var ty=(ev.inspection_types||[]).join(', ')||'Regular';
 var tyShort=ty.toLowerCase().indexOf('special')>=0?'Special':'Regular';
+if(ev.project!==PROJ&&tyShort==='Special')return;
 var isCancelled=(ev.status==='cancelled');
 html+='<div class="log-item'+(isCancelled?' evt-cancelled':'')+'">';
 html+='<span class="evt-time">'+fmt(ev.inspection_time.substring(0,5))+'</span>';
@@ -382,16 +401,17 @@ var r=new FileReader();r.onload=function(e){document.getElementById('photoPrevie
 }
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='Regular');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
+function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
-if(!photoFile||!d||!t||!inspType||!nm){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
 var specType=document.getElementById('specialType').value;
 if(inspType==='Special'&&!specType){alert('Please select a Special Inspection Type.');return;}
 var emails=[];document.querySelectorAll('.emailCheck:checked').forEach(function(cb){emails.push(cb.value);});
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
 fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
-fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));
+fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
@@ -419,7 +439,8 @@ document.getElementById('btnSpecial').classList.remove('active');document.getEle
 document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
 document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';
-inspType='';photoFile=null;loadMD();
+inspType='';inspDur='';photoFile=null;loadMD();
+document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
 </script>
