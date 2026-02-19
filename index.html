@@ -177,6 +177,7 @@ select.field-input{background:#222;color:#fff;}
 </div>
 <script>
 var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
+var PROJ='WPMS';
 var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
 var photoFile=null,inspType='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
@@ -245,7 +246,7 @@ html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
 if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
 if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
 if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
-if(!isCancelled){
+if(!isCancelled&&e.project===PROJ){
 html+='<div class="evt-actions">';
 html+='<button class="btn-edit" onclick="editInsp(\''+e.id+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Edit</button>';
 html+='<button class="btn-cancel" onclick="cancelInsp(\''+e.id+'\',\''+e.project+'\',\''+tyShort+'\',\''+e.inspection_date+'\',\''+e.inspection_time.substring(0,5)+'\')">Cancel</button>';
