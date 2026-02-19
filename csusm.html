@@ -95,9 +95,9 @@ select.field-input{background:#222;color:#fff;}
 <div class="card">
 <div style="padding:20px;text-align:center;">
 <img src="image0-5.jpeg" alt="Reports Logo" style="width:80px;height:80px;margin-bottom:8px;">
-<div style="font-size:24px;font-weight:bold;color:#e8742a;margin-bottom:4px;">My Daily Reports</div>
+<div style="font-size:24px;font-weight:bold;color:#5a8fc0;margin-bottom:4px;">My Daily Reports</div>
 <div style="font-size:13px;color:#888;margin-bottom:12px;">Professional inspection documentation</div>
-<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#5a8fc0;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.com','_blank')">Learn More</button>
+<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.com','_blank')">Learn More</button>
 </div>
 </div>
 </div>
@@ -203,6 +203,7 @@ var mD={},selDate=null,allEvents=[];
 var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
+function pad(n){return n<10?'0'+n:n;}
 function pad(n){return String(n).padStart(2,'0');}
 function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
 function fmtDate(s){var p=s.split('-');var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));return DN[dt.getDay()]+' '+parseInt(p[1])+'.'+parseInt(p[2])+'.'+p[0].substring(2);}
@@ -236,14 +237,8 @@ return ev.project===PROJ||!isSpecial;
 var hasOwn=visible.some(function(ev){return ev.project===PROJ;});
 var hasOther=visible.some(function(ev){return ev.project!==PROJ;});
 var total=visible.length;
-if(total>=3){
+if(total>0){
 c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;text-align:center;margin-top:3px;font-weight:700;">'+total+'</div>';
-}else if(hasOwn&&hasOther){
-c.innerHTML+='<div style="padding:0 2px;margin-top:3px;"><div class="day-dot" style="background:#e8742a"></div><div class="day-dot" style="background:#5a8fc0"></div></div>';
-}else if(hasOwn){
-c.innerHTML+='<div class="day-dot" style="background:#1a5276"></div>';
-}else if(hasOther){
-c.innerHTML+='<div class="day-dot" style="background:#5a8fc0"></div>';
 }
 }
 c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
@@ -268,7 +263,18 @@ if(e.project!==PROJ&&tyShort==='Special')return;
 var isCancelled=(e.status==='cancelled');
 html+='<div class="evt-row'+(isCancelled?' evt-cancelled':'')+'">';
 var timeDisplay=e.flexible_display==='flexible'?'Flexible':fmt(e.inspection_time.substring(0,5));
-html+='<span class="evt-time">'+timeDisplay+'</span>';
+var duration=e.duration?parseInt(e.duration):60;
+var endTime='';
+if(e.flexible_display!=='flexible'&&duration){
+var startHour=parseInt(e.inspection_time.substring(0,2));
+var startMin=parseInt(e.inspection_time.substring(3,5));
+var endMin=startHour*60+startMin+duration;
+var endHour=Math.floor(endMin/60);
+var endMinutes=endMin%60;
+if(endHour>=24)endHour-=24;
+endTime=' - '+fmt(pad(endHour)+':'+pad(endMinutes));
+}
+html+='<span class="evt-time">'+timeDisplay+endTime+'</span>';
 html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
 if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
 if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
