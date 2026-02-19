@@ -236,12 +236,16 @@ return ev.project===PROJ||!isSpecial;
 });
 var hasOwn=visible.some(function(ev){return ev.project===PROJ;});
 var hasOther=visible.some(function(ev){return ev.project!==PROJ;});
+var total=visible.length;
 if(hasOwn&&hasOther){
-c.innerHTML+='<div style="display:flex;justify-content:center;gap:3px;margin-top:2px;"><div class="day-dot" style="background:#e8742a"></div><div class="day-dot" style="background:#5a8fc0"></div></div>';
+c.innerHTML+='<div style="padding:0 2px;margin-top:3px;"><div class="day-dot" style="background:#e8742a"></div><div class="day-dot" style="background:#5a8fc0"></div></div>';
 }else if(hasOwn){
 c.innerHTML+='<div class="day-dot" style="background:#e8742a"></div>';
 }else if(hasOther){
 c.innerHTML+='<div class="day-dot" style="background:#5a8fc0"></div>';
+}
+if(total>=3){
+c.innerHTML+='<div style="font-size:9px;color:#888;text-align:center;margin-top:1px;font-weight:600;">'+total+'x</div>';
 }
 }
 c.onclick=(function(x){return function(){selDate=x;renderCal();showDay(x);};})(s);
