@@ -189,7 +189,14 @@ select.field-input{background:#222;color:#fff;}
 Additional emails
 </label>
 <div id="additionalEmailsWrap" style="display:none;">
-<input type="text" id="additionalEmailsList" class="field-input" placeholder="Enter additional emails separated by commas" style="font-size:13px;">
+<input type="text" id="additionalEmailsList" class="field-input" placeholder="Enter additional emails separated by commas" style="font-size:13px;" onblur="checkForNewEmails()">
+<div style="font-size:11px;color:#888;margin-top:4px;">Separate multiple emails with commas</div>
+<div id="saveEmailPrompt" style="display:none;margin-top:8px;padding:10px;background:#2a3a2a;border-radius:4px;border-left:3px solid #e8742a;">
+<div style="font-size:12px;color:#ccc;margin-bottom:6px;">Save new email addresses as permanent options?</div>
+<div id="newEmailsList" style="font-size:11px;color:#5a8fc0;margin-bottom:8px;"></div>
+<button onclick="saveNewEmails()" style="background:#e8742a;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:11px;margin-right:8px;cursor:pointer;">Save Permanently</button>
+<button onclick="dismissSavePrompt()" style="background:#555;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;">Not Now</button>
+</div>
 <div style="font-size:11px;color:#888;margin-top:4px;">Separate multiple emails with commas</div>
 </div>
 <button onclick="submitIR()" id="submitBtn" class="submit-btn">Submit Inspection Request</button>
@@ -220,6 +227,55 @@ document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
 document.getElementById('calendarView').style.display=t==='calendar'?'block':'none';
 document.getElementById('requestView').style.display=t==='request'?'block':'none';
+}
+function checkForNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+if(!emailText)return;
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+document.getElementById('newEmailsList').textContent=newEmails.join(', ');
+document.getElementById('saveEmailPrompt').style.display='block';
+}
+}
+function getExistingEmails(){
+var existing=[];
+document.querySelectorAll('.emailCheck').forEach(function(cb){existing.push(cb.value.toLowerCase());});
+var saved=localStorage.getItem('permanentEmails');
+if(saved){existing=existing.concat(JSON.parse(saved).map(function(e){return e.toLowerCase();}));}
+return existing;
+}
+function saveNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+var saved=localStorage.getItem('permanentEmails');
+var permanentEmails=saved?JSON.parse(saved):[];
+permanentEmails=permanentEmails.concat(newEmails);
+localStorage.setItem('permanentEmails',JSON.stringify(permanentEmails));
+addPermanentEmailCheckboxes();
+}
+dismissSavePrompt();
+}
+function dismissSavePrompt(){
+document.getElementById('saveEmailPrompt').style.display='none';
+}
+function addPermanentEmailCheckboxes(){
+var saved=localStorage.getItem('permanentEmails');
+if(!saved)return;
+var emails=JSON.parse(saved);
+var emailList=document.querySelector('.email-list');
+emails.forEach(function(email){
+if(!document.querySelector('.emailCheck[value="'+email+'"]')){
+var label=document.createElement('label');
+label.className='email-row';
+label.innerHTML='<input type="checkbox" value="'+email+'" class="emailCheck">'+email;
+emailList.appendChild(label);
+}
+});
 }
 function changeMonth(dir){
 cM+=dir;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}
@@ -339,20 +395,53 @@ else{alert('Error: '+(data.error||'Unknown'));}
 }
 function editInsp(id,oldDate,oldTime){
 showActionModal('Who is editing this inspection?',getTeamNames(),function(who){
-var newDate=prompt('New date (YYYY-MM-DD):',oldDate);
-if(!newDate)return;
-var newTime=prompt('New time (HH:MM, 24hr format):',oldTime);
-if(!newTime)return;
-var reason=prompt('Reason for change (optional):');
+showEditModal(id,oldDate,oldTime,who);
+});
+}
+function showEditModal(id,oldDate,oldTime,who){
+var overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+var modal=document.createElement('div');
+modal.style.cssText='background:#1a1a1a;border-radius:12px;padding:30px;max-width:400px;width:100%;border:1px solid #333;';
+modal.innerHTML=`
+<h3 style="color:#e8742a;margin:0 0 20px 0;">Edit Inspection</h3>
+<div style="margin-bottom:15px;">
+<label style="display:block;color:#ccc;margin-bottom:5px;font-size:14px;">Date</label>
+<input type="date" id="editDate" value="${oldDate}" style="width:100%;background:#333;color:#fff;border:1px solid #555;padding:12px;border-radius:6px;font-size:14px;box-sizing:border-box;">
+</div>
+<div style="margin-bottom:15px;">
+<label style="display:block;color:#ccc;margin-bottom:5px;font-size:14px;">Time</label>
+<input type="time" id="editTime" value="${oldTime}" style="width:100%;background:#333;color:#fff;border:1px solid #555;padding:12px;border-radius:6px;font-size:14px;box-sizing:border-box;">
+</div>
+<div style="margin-bottom:20px;">
+<label style="display:block;color:#ccc;margin-bottom:5px;font-size:14px;">Reason for change (optional)</label>
+<textarea id="editReason" rows="2" placeholder="Why is this being changed?" style="width:100%;background:#333;color:#fff;border:1px solid #555;padding:12px;border-radius:6px;font-size:14px;box-sizing:border-box;"></textarea>
+</div>
+<div style="display:flex;gap:10px;">
+<button onclick="document.body.removeChild(document.querySelector('[data-edit-modal]'))" style="flex:1;background:#555;color:#fff;padding:12px;border:none;border-radius:6px;cursor:pointer;">Cancel</button>
+<button onclick="submitEdit('${id}','${who}')" style="flex:1;background:#e8742a;color:#fff;padding:12px;border:none;border-radius:6px;cursor:pointer;">Save Changes</button>
+</div>
+`;
+overlay.setAttribute('data-edit-modal','true');
+overlay.appendChild(modal);
+document.body.appendChild(overlay);
+}
+function submitEdit(id,who){
+var newDate=document.getElementById('editDate').value;
+var newTime=document.getElementById('editTime').value;
+var reason=document.getElementById('editReason').value;
+if(!newDate||!newTime){alert('Please enter both date and time.');return;}
 fetch(SB+'/functions/v1/update-inspection',{
 method:'POST',
 headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
 body:JSON.stringify({request_id:id,action:'edit',action_by:who,new_date:newDate,new_time:newTime,reason:reason||''})
 }).then(function(r){return r.json();}).then(function(data){
-if(data.success){alert('Inspection updated.');loadMD();}
-else{alert('Error: '+(data.error||'Unknown'));}
+if(data.success){
+alert('Inspection updated successfully.');
+document.body.removeChild(document.querySelector('[data-edit-modal]'));
+loadMD();
+}else{alert('Error: '+(data.error||'Unknown'));}
 }).catch(function(){alert('Connection error.');});
-});
 }
 function loadMD(){
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
@@ -447,6 +536,7 @@ document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
+addPermanentEmailCheckboxes();
 </script>
 </body>
 </html>
