@@ -12,7 +12,7 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .header p{color:#888;font-size:13px;}
 .tabs{display:flex;border-bottom:2px solid #333;margin-bottom:0;}
 .tab{flex:1;text-align:center;padding:10px;font-size:14px;font-weight:600;cursor:pointer;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px;}
-.tab.active{color:#e8742a;border-bottom-color:#e8742a;}
+.tab.active{color:#5a8fc0;border-bottom-color:#5a8fc0;}
 .card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .card-top{border-radius:8px 8px 0 0;border-top:none;}
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
@@ -98,16 +98,15 @@ select.field-input{background:#222;color:#fff;}
 <img src="image0-5.jpeg" alt="Reports Logo" style="width:80px;height:80px;margin-bottom:8px;">
 <div style="font-size:24px;font-weight:bold;color:#5a8fc0;margin-bottom:4px;">My Daily Reports</div>
 <div style="font-size:13px;color:#888;margin-bottom:12px;">Professional inspection documentation</div>
-<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.com','_blank')">Learn More</button>
+<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.org','_blank')">Learn More</button>
 </div>
 </div>
 <div class="card">
 <div style="padding:16px;font-size:12px;color:#888;line-height:1.4;">
 <strong style="color:#5a8fc0;">Quick Guide:</strong>
 <span style="color:#e8742a;">Click any day</span> to see live schedule from all jobsites •
-<span style="color:#e8742a;">"Flexible"</span> = inspector picks best time, sends noon reminder •
 <span style="color:#e8742a;">Numbers</span> show inspection count per day •
-<span style="color:#e8742a;">Email others</span> adds team members to notifications
+<span style="color:#e8742a;">Additional emails</span> can be saved as permanent checkboxes
 </div>
 </div>
 </div>
@@ -184,6 +183,20 @@ select.field-input{background:#222;color:#fff;}
 <label class="email-row"><input type="checkbox" value="sarah.williams@democonstruction.com" class="emailCheck">Sarah Williams (Demo GC)</label>
 <label class="email-row"><input type="checkbox" value="tom.rodriguez@demotesting.com" class="emailCheck">Tom Rodriguez (Demo Testing)</label>
 </div>
+<label style="display:flex;align-items:center;gap:8px;margin:12px 0 8px 0;font-size:13px;color:#ccc;cursor:pointer;">
+<input type="checkbox" id="additionalEmailsCheck" onchange="toggleAdditionalEmails()" style="width:18px;height:18px;">
+Additional emails
+</label>
+<div id="additionalEmailsWrap" style="display:none;">
+<input type="text" id="additionalEmailsList" class="field-input" placeholder="Enter additional emails separated by commas" style="font-size:13px;" onblur="checkForNewEmails()">
+<div style="font-size:11px;color:#888;margin-top:4px;">Separate multiple emails with commas</div>
+<div id="saveEmailPrompt" style="display:none;margin-top:8px;padding:10px;background:#2a3a2a;border-radius:4px;border-left:3px solid #e8742a;">
+<div style="font-size:12px;color:#ccc;margin-bottom:6px;">Save new email addresses as permanent options?</div>
+<div id="newEmailsList" style="font-size:11px;color:#5a8fc0;margin-bottom:8px;"></div>
+<button onclick="saveNewEmails()" style="background:#e8742a;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:11px;margin-right:8px;cursor:pointer;">Save Permanently</button>
+<button onclick="dismissSavePrompt()" style="background:#555;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;">Not Now</button>
+</div>
+</div>
 <button onclick="submitIR()" id="submitBtn" class="submit-btn">Submit Inspection Request</button>
 </div>
 <div class="success-view" id="successView">
@@ -202,6 +215,60 @@ var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={},selDate=null,allEvents=[];
 var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function toggleAdditionalEmails(){
+var wrap=document.getElementById('additionalEmailsWrap');
+var checked=document.getElementById('additionalEmailsCheck').checked;
+wrap.style.display=checked?'block':'none';
+}
+function checkForNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+if(!emailText)return;
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+document.getElementById('newEmailsList').textContent=newEmails.join(', ');
+document.getElementById('saveEmailPrompt').style.display='block';
+}
+}
+function getExistingEmails(){
+var existing=[];
+document.querySelectorAll('.emailCheck').forEach(function(cb){existing.push(cb.value.toLowerCase());});
+var saved=localStorage.getItem('permanentEmails');
+if(saved){existing=existing.concat(JSON.parse(saved).map(function(e){return e.toLowerCase();}));}
+return existing;
+}
+function saveNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+var saved=localStorage.getItem('permanentEmails');
+var permanentEmails=saved?JSON.parse(saved):[];
+permanentEmails=permanentEmails.concat(newEmails);
+localStorage.setItem('permanentEmails',JSON.stringify(permanentEmails));
+addPermanentEmailCheckboxes();
+}
+dismissSavePrompt();
+}
+function dismissSavePrompt(){
+document.getElementById('saveEmailPrompt').style.display='none';
+}
+function addPermanentEmailCheckboxes(){
+var saved=localStorage.getItem('permanentEmails');
+if(!saved)return;
+var emails=JSON.parse(saved);
+var emailList=document.querySelector('.email-list');
+emails.forEach(function(email){
+if(!document.querySelector('.emailCheck[value="'+email+'"]')){
+var label=document.createElement('label');
+label.className='email-row';
+label.innerHTML='<input type="checkbox" value="'+email+'" class="emailCheck">'+email;
+emailList.appendChild(label);
+}
+});
+}
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
 function pad(n){return n<10?'0'+n:n;}
 function pad(n){return String(n).padStart(2,'0');}
@@ -417,6 +484,7 @@ document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
+addPermanentEmailCheckboxes();
 </script>
 </body>
 </html>
