@@ -43,6 +43,15 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .evt-actions button{font-size:11px;padding:3px 10px;margin-right:6px;border-radius:4px;cursor:pointer;background:transparent;}
 .evt-actions .btn-edit{color:#e8742a;border:1px solid #e8742a;}
 .evt-actions .btn-cancel{color:#c44;border:1px solid #c44;}
+.approval-status{font-size:11px;font-weight:600;margin-top:4px;padding:2px 8px;border-radius:4px;display:inline-block;}
+.status-approved{background:#1a4d1a;color:#4CAF50;border:1px solid #4CAF50;}
+.status-failed{background:#4d1a1a;color:#f44336;border:1px solid #f44336;}
+.status-pending{background:#4d3a1a;color:#ff9800;border:1px solid #ff9800;}
+.approval-buttons{margin-top:6px;}
+.btn-approve{background:#4CAF50;color:#fff;border:1px solid #4CAF50;}
+.btn-fail{background:#f44336;color:#fff;border:1px solid #f44336;}
+.btn-approve:hover{background:#45a049;}
+.btn-fail:hover{background:#da190b;}
 .evt-cancelled{opacity:0.4;}
 .evt-cancelled .evt-time,.evt-cancelled .evt-type{text-decoration:line-through;}
 .cancelled-label{font-size:10px;color:#c44;font-weight:600;margin-left:6px;}
@@ -628,6 +637,30 @@ document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('ac
 loadMD();
 loadSavedEmails();
 loadSavedNames();
+// Approval system functions
+function approveInspection(id){
+if(confirm('Approve this inspection?')){
+updateInspectionStatus(id, 'approved');
+}
+}
+function failInspection(id){
+var reason = prompt('Reason for failing (optional):');
+updateInspectionStatus(id, 'failed', reason);
+}
+function updateInspectionStatus(id, status, reason){
+fetch(SB+'/functions/v1/update-inspection-status',{
+method:'POST',
+headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},
+body:JSON.stringify({request_id:id,status:status,reason:reason||'',approved_by:'Jesse Saltzman'})
+}).then(function(r){return r.json();}).then(function(data){
+if(data.success){
+alert('Status updated to: ' + status);
+loadMD(); // Refresh calendar
+}else{
+alert('Error: '+(data.error||'Unknown'));
+}
+}).catch(function(){alert('Connection error.');});
+}
 </script>
 </body>
 </html>
