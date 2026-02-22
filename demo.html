@@ -445,14 +445,38 @@ loadMD();
 }).catch(function(){alert('Connection error.');});
 }
 function loadMD(){
+try {
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
 fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
-}).then(function(r){return r.json();}).then(function(data){
+}).then(function(r){
+if(!r.ok){
+console.log('Database request failed, showing empty calendar');
+mD={};allEvents=[];
+renderCal();
+return Promise.reject('Database error');
+}
+return r.json();
+}).then(function(data){
+if(!data || !Array.isArray(data)){
+console.log('Invalid data received, showing empty calendar');
+mD={};allEvents=[];
+renderCal();
+return;
+}
 mD={};allEvents=data;
 data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});
 renderCal();
-}).catch(function(){renderCal();});
+}).catch(function(error){
+console.log('Calendar loading error:', error);
+mD={};allEvents=[];
+renderCal();
+});
+} catch(error) {
+console.log('Calendar initialization error:', error);
+mD={};allEvents=[];
+renderCal();
+}
 }
 function showPhoto(input){
 if(input.files&&input.files[0]){
