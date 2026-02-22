@@ -26,19 +26,6 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-cell.today .day-num{background:#3a6fb0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
 .day-cell.other-month{color:#444;}
 .day-dot{width:80%;height:3px;border-radius:2px;margin:3px auto 0;}
-.day-cards-container{overflow:hidden;margin:8px 0;}
-.day-cards-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 8px;scrollbar-width:none;-ms-overflow-style:none;}
-.day-cards-scroll::-webkit-scrollbar{display:none;}
-.day-card{min-width:120px;background:#2a2a2a;border-radius:8px;padding:12px;border:2px solid transparent;cursor:pointer;flex-shrink:0;}
-.day-card.selected{border-color:#e8742a;}
-.day-card.today{border-color:#5a8fc0;}
-.day-card-date{color:#fff;font-weight:bold;font-size:16px;margin-bottom:4px;}
-.day-card-day{color:#888;font-size:12px;margin-bottom:8px;}
-.time-blocks{display:flex;flex-wrap:wrap;gap:4px;}
-.time-block{background:#1a1a1a;color:#ccc;font-size:10px;padding:2px 6px;border-radius:4px;}
-.time-block.booked{background:#e8742a;color:#fff;}
-.view-btn{background:#333;color:#ccc;border:1px solid #555;padding:6px 16px;border-radius:4px;font-size:12px;cursor:pointer;}
-.view-btn.active{background:#e8742a;color:#fff;border-color:#e8742a;}
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:13px;font-weight:bold;color:#fff;margin-bottom:8px;}
 .evt-row{padding:8px 0;border-bottom:1px solid #2a2a2a;font-size:13px;color:#fff;}
@@ -96,16 +83,10 @@ select.field-input{background:#222;color:#fff;}
 <strong id="monthLabel"></strong>
 <button onclick="changeMonth(1)">&rarr;</button>
 </div>
-<div style="display:flex;gap:8px;justify-content:center;margin:10px 0;">
-<button onclick="setViewMode('week')" id="weekBtn" class="view-btn active">Week</button>
-<button onclick="setViewMode('month')" id="monthBtn" class="view-btn">Month</button>
+<div class="week-row" style="padding:0 8px;">
+<div class="week-header">S</div><div class="week-header">M</div><div class="week-header">T</div><div class="week-header">W</div><div class="week-header">T</div><div class="week-header">F</div><div class="week-header">S</div>
 </div>
-</div>
-<div class="day-cards-container">
-<div id="dayCardsScroll" class="day-cards-scroll">
-<!-- Day cards will be populated here -->
-</div>
-</div>
+<div id="calGrid" class="week-row" style="padding:0 8px;"></div>
 <div class="day-detail" id="dayDetail">
 <div class="day-detail-header" id="dayDetailHeader"></div>
 <div id="dayDetailList"></div>
@@ -300,71 +281,8 @@ cM+=dir;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}
 selDate=null;document.getElementById('dayDetail').style.display='none';loadMD();
 }
 function renderCal(){
-renderDayCards();
-}
-var viewMode = 'week';
-function setViewMode(mode) {
-viewMode = mode;
-document.getElementById('weekBtn').classList.toggle('active', mode === 'week');
-document.getElementById('monthBtn').classList.toggle('active', mode === 'month');
-renderDayCards();
-}
-function renderDayCards(){
 document.getElementById('monthLabel').textContent=MN[cM]+' '+cY;
-var container = document.getElementById('dayCardsScroll');
-container.innerHTML = '';
-var today = new Date();
-var daysToShow = viewMode === 'week' ? 7 : 14;
-var startDate = viewMode === 'week' ? 
-new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay()) :
-new Date(cY, cM, 1);
-
-for(var i = 0; i < daysToShow; i++) {
-var date = new Date(startDate);
-date.setDate(startDate.getDate() + i);
-var dateStr = ds(date.getFullYear(), date.getMonth(), date.getDate());
-var dayCard = document.createElement('div');
-dayCard.className = 'day-card';
-if(dateStr === selDate) dayCard.classList.add('selected');
-if(date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
-dayCard.classList.add('today');
-}
-
-var dayName = DN[date.getDay()].substring(0,3);
-var dayNum = date.getDate();
-
-// Build time blocks  
-var timeBlocks = '';
-var inspections = mD[dateStr] || [];
-var visibleInspections = inspections.filter(function(ev){
-var isSpecial=(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;
-return ev.project===PROJ||!isSpecial;
-});
-
-if(visibleInspections.length > 0) {
-visibleInspections.forEach(function(insp) {
-var time = fmt(insp.inspection_time.substring(0,5));
-timeBlocks += '<div class="time-block booked">' + time.replace(' ', '') + '</div>';
-});
-} else {
-timeBlocks += '<div class="time-block">Available</div>';
-}
-
-dayCard.innerHTML = '<div class="day-card-date">' + dayNum + '</div>' +
-'<div class="day-card-day">' + dayName + '</div>' +
-'<div class="time-blocks">' + timeBlocks + '</div>';
-
-dayCard.onclick = (function(ds) {
-return function() {
-selDate = ds;
-renderDayCards();
-showDay(ds);
-};
-})(dateStr);
-
-container.appendChild(dayCard);
-}
-}
+var g=document.getElementById('calGrid');g.innerHTML='';
 var f=new Date(cY,cM,1),ld=new Date(cY,cM+1,0).getDate(),sd=f.getDay(),today=new Date();
 var pl=new Date(cY,cM,0).getDate();
 for(var i=sd-1;i>=0;i--){var c=document.createElement('div');c.className='day-cell other-month';c.innerHTML='<span class="day-num">'+(pl-i)+'</span>';g.appendChild(c);}
@@ -601,7 +519,7 @@ localStorage.setItem('savedAdditionalEmails',additionalText);
 }
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
-fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','CSUSM');fd.append('gc','CW Driver');
+fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
 if(isFlexible)fd.append('flexible','true');
 if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
