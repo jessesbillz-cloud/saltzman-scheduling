@@ -480,18 +480,65 @@ var r=new FileReader();r.onload=function(e){document.getElementById('photoPrevie
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
-function toggleOtherName(){var s=document.getElementById('iName');document.getElementById('iNameOther').style.display=s.value==='__other__'?'block':'none';}
-function toggleAdditionalEmails(){
-var wrap=document.getElementById('additionalEmailsWrap');
-var checked=document.getElementById('additionalEmailsCheck').checked;
-wrap.style.display=checked?'block':'none';
-if(checked&&localStorage.getItem('savedAdditionalEmails')){
-document.getElementById('additionalEmailsList').value=localStorage.getItem('savedAdditionalEmails');
+function toggleOtherName(){
+var s=document.getElementById('iName');
+var isOther = s.value==='__other__';
+document.getElementById('iNameOther').style.display=isOther?'block':'none';
+document.getElementById('saveNameLabel').style.display=isOther?'flex':'none';
+}
+function loadSavedEmails(){
+var savedEmails = localStorage.getItem('savedInspectionEmails');
+if(savedEmails){
+document.getElementById('additionalEmailsList').value = savedEmails;
+document.getElementById('saveEmailsCheck').checked = true;
+}
+}
+function saveEmailsForFuture(){
+var emailText = document.getElementById('additionalEmailsList').value.trim();
+var shouldSave = document.getElementById('saveEmailsCheck').checked;
+if(shouldSave && emailText){
+localStorage.setItem('savedInspectionEmails', emailText);
+} else if(!shouldSave){
+localStorage.removeItem('savedInspectionEmails');
+}
+}
+function loadSavedNames(){
+var savedNames = JSON.parse(localStorage.getItem('savedInspectorNames') || '[]');
+var nameSelect = document.getElementById('iName');
+savedNames.forEach(function(name){
+var exists = false;
+for(var i = 0; i < nameSelect.options.length; i++){
+if(nameSelect.options[i].value === name){
+exists = true;
+break;
+}
+}
+if(!exists){
+var option = document.createElement('option');
+option.value = name;
+option.textContent = name;
+nameSelect.insertBefore(option, nameSelect.querySelector('option[value="__other__"]'));
+}
+});
+}
+function saveNameForFuture(){
+var nameText = document.getElementById('iNameOther').value.trim();
+var shouldSave = document.getElementById('saveNameCheck').checked;
+if(shouldSave && nameText){
+var savedNames = JSON.parse(localStorage.getItem('savedInspectorNames') || '[]');
+if(!savedNames.includes(nameText)){
+savedNames.push(nameText);
+localStorage.setItem('savedInspectorNames', JSON.stringify(savedNames));
+loadSavedNames();
+}
 }
 }
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
-if(nm==='__other__')nm=document.getElementById('iNameOther').value.trim();
+if(nm==='__other__'){
+nm=document.getElementById('iNameOther').value.trim();
+saveNameForFuture(); // Save name if checkbox is checked
+}
 var isFlexible=(t==='flexible');
 if(isFlexible)t='07:00';
 if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
@@ -511,13 +558,11 @@ var emails=[];
 // Collect checked team members
 document.querySelectorAll('.emailCheck:checked').forEach(function(cb){emails.push(cb.value);});
 // Add additional emails if provided
-if(document.getElementById('additionalEmailsCheck').checked){
-var additionalText=document.getElementById('additionalEmailsList').value.trim();
+var additionalText = document.getElementById('additionalEmailsList').value.trim();
 if(additionalText){
-var additionalEmails=additionalText.split(',').map(function(e){return e.trim();}).filter(function(e){return e;});
-emails=emails.concat(additionalEmails);
-localStorage.setItem('savedAdditionalEmails',additionalText);
-}
+var additionalEmails = additionalText.split(',').map(function(e){return e.trim();}).filter(function(e){return e;});
+emails = emails.concat(additionalEmails);
+saveEmailsForFuture(); // Save emails if checkbox is checked
 }
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
@@ -551,12 +596,14 @@ document.getElementById('photoIn').value='';document.getElementById('submitBtn')
 document.getElementById('btnSpecial').classList.remove('active');document.getElementById('btnRegular').classList.remove('active');
 document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
-document.getElementById('additionalEmailsCheck').checked=false;document.getElementById('additionalEmailsWrap').style.display='none';
-document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';inspType='';inspDur='';photoFile=null;loadMD();
+document.getElementById('additionalEmailsList').value='';document.getElementById('saveEmailsCheck').checked=false;
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';
+document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFile=null;loadMD();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 loadMD();
-addPermanentEmailCheckboxes();
+loadSavedEmails();
+loadSavedNames();
 </script>
 </body>
 </html>
