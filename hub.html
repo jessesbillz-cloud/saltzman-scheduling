@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspection Scheduling - Jesse Saltzman</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Roboto, -apple-system, sans-serif; background: #0f0f0f; color: #fff; padding: 20px; text-align: center; }
+
+.header { margin-bottom: 40px; margin-top: 20px; }
+.header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #5a8fc0; margin-bottom: 15px; object-fit: cover; }
+.header h1 { font-size: 24px; color: #fff; margin-bottom: 5px; font-weight: 800; }
+.header p { color: #aaa; font-size: 15px; font-weight: 500; }
+
+.container { max-width: 500px; margin: 0 auto; }
+
+.instruction { font-size: 16px; color: #e8742a; font-weight: 600; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+.project-list { display: flex; flex-direction: column; gap: 15px; }
+
+/* Massive, easy-to-tap buttons for the contractors */
+.project-btn { background: #1a1a1a; border: 1px solid #333; border-left: 6px solid #5a8fc0; padding: 25px 20px; border-radius: 12px; text-decoration: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s, border-color 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.project-btn:hover { background: #222; border-left-color: #e8742a; }
+
+.project-info { text-align: left; }
+.project-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; display: block; }
+.project-location { font-size: 13px; color: #888; display: block; }
+
+.chevron { color: #5a8fc0; font-size: 24px; font-weight: bold; }
+
+.footer-branding { margin-top: 60px; padding-top: 20px; border-top: 1px solid #333; }
+.footer-branding img { width: 40px; margin-bottom: 10px; opacity: 0.7; }
+.footer-branding p { font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="jesse-suit-headshot.jpg" alt="Jesse Saltzman">
+        <h1>Jesse Saltzman</h1>
+        <p>DSA Class 1 Inspector</p>
+    </div>
+
+    <div class="instruction">Select Your Project</div>
+
+    <div class="project-list">
+        
+        <a href="https://jessesbillz-cloud.github.io/wpms.html" class="project-btn">
+            <div class="project-info">
+                <span class="project-name">Woodland Park Middle School</span>
+                <span class="project-location">San Marcos, CA</span>
+            </div>
+            <div class="chevron">&rsaquo;</div>
+        </a>
+
+        <a href="https://jessesbillz-cloud.github.io/csusm.html" class="project-btn">
+            <div class="project-info">
+                <span class="project-name">CSUSM ISE Building</span>
+                <span class="project-location">San Marcos, CA</span>
+            </div>
+            <div class="chevron">&rsaquo;</div>
+        </a>
+
+        <a href="https://jessesbillz-cloud.github.io/calendar-testing/test-calendar.html" class="project-btn" style="border-left-color: #e8742a; margin-top: 20px;">
+            <div class="project-info">
+                <span class="project-name">Demo Sandbox</span>
+                <span class="project-location">Test the scheduling system</span>
+            </div>
+            <div class="chevron" style="color: #e8742a;">&rsaquo;</div>
+        </a>
+
+    </div>
+
+    <div class="footer-branding">
+        <img src="image0-5.jpeg" alt="My Daily Reports" style="border-radius: 8px;">
+        <p>Powered by My Daily Reports</p>
+    </div>
+</div>
+
+</body>
+</html>
