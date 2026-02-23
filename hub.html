@@ -3,35 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inspection Scheduling - Jesse Saltzman</title>
+<title>Inspection Scheduling - Technical Demo</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Roboto, -apple-system, sans-serif; background: #0f0f0f; color: #fff; padding: 20px; text-align: center; }
 
 .header { margin-bottom: 40px; margin-top: 20px; }
-.header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #5a8fc0; margin-bottom: 15px; object-fit: cover; }
-.header h1 { font-size: 24px; color: #fff; margin-bottom: 5px; font-weight: 800; }
-.header p { color: #aaa; font-size: 15px; font-weight: 500; }
+.header img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #e8742a; margin-bottom: 15px; object-fit: cover; box-shadow: 0 0 20px rgba(232, 116, 42, 0.2); }
+.header h1 { font-size: 26px; color: #fff; margin-bottom: 5px; font-weight: 800; }
+.header p { color: #5a8fc0; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
 .container { max-width: 500px; margin: 0 auto; }
 
-.instruction { font-size: 16px; color: #e8742a; font-weight: 600; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+.instruction { font-size: 14px; color: #888; font-weight: 600; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
-.project-list { display: flex; flex-direction: column; gap: 15px; }
+.project-list { display: flex; flex-direction: column; gap: 20px; }
 
-/* Massive, easy-to-tap buttons for the contractors */
-.project-btn { background: #1a1a1a; border: 1px solid #333; border-left: 6px solid #5a8fc0; padding: 25px 20px; border-radius: 12px; text-decoration: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s, border-color 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-.project-btn:hover { background: #222; border-left-color: #e8742a; }
+/* The Sandbox Button with a "Site Office" feel */
+.project-btn { 
+    background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9)), url('https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&w=500&q=60'); 
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #333; 
+    border-left: 6px solid #e8742a; 
+    padding: 35px 20px; 
+    border-radius: 15px; 
+    text-decoration: none; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    transition: all 0.2s ease; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+}
+.project-btn:hover { background: #222; transform: translateY(-2px); border-left-width: 10px; }
 
 .project-info { text-align: left; }
-.project-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; display: block; }
-.project-location { font-size: 13px; color: #888; display: block; }
+.project-name { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; display: block; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.project-location { font-size: 14px; color: #e8742a; font-weight: 700; display: block; }
 
-.chevron { color: #5a8fc0; font-size: 24px; font-weight: bold; }
+.chevron { color: #fff; font-size: 28px; font-weight: bold; }
 
-.footer-branding { margin-top: 60px; padding-top: 20px; border-top: 1px solid #333; }
-.footer-branding img { width: 40px; margin-bottom: 10px; opacity: 0.7; }
-.footer-branding p { font-size: 12px; color: #666; }
+.footer-branding { margin-top: 80px; padding-top: 20px; border-top: 1px solid #333; }
+.footer-branding img { width: 50px; margin-bottom: 10px; border-radius: 8px; }
+.footer-branding p { font-size: 12px; color: #444; font-weight: 600; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -43,39 +57,27 @@ body { font-family: 'Segoe UI', Roboto, -apple-system, sans-serif; background: #
         <p>DSA Class 1 Inspector</p>
     </div>
 
-    <div class="instruction">Select Your Project</div>
+    <div class="instruction">Technical Sandbox</div>
 
     <div class="project-list">
         
-        <a href="https://jessesbillz-cloud.github.io/wpms.html" class="project-btn">
+        <a href="test-calendar.html" class="project-btn">
             <div class="project-info">
-                <span class="project-name">Woodland Park Middle School</span>
-                <span class="project-location">San Marcos, CA</span>
+                <span class="project-name">Active Job Sandbox</span>
+                <span class="project-location">DEMO ENVIRONMENT</span>
             </div>
             <div class="chevron">&rsaquo;</div>
         </a>
 
-        <a href="https://jessesbillz-cloud.github.io/csusm.html" class="project-btn">
-            <div class="project-info">
-                <span class="project-name">CSUSM ISE Building</span>
-                <span class="project-location">San Marcos, CA</span>
-            </div>
-            <div class="chevron">&rsaquo;</div>
-        </a>
-
-        <a href="https://jessesbillz-cloud.github.io/calendar-testing/test-calendar.html" class="project-btn" style="border-left-color: #e8742a; margin-top: 20px;">
-            <div class="project-info">
-                <span class="project-name">Demo Sandbox</span>
-                <span class="project-location">Test the scheduling system</span>
-            </div>
-            <div class="chevron" style="color: #e8742a;">&rsaquo;</div>
-        </a>
+        <p style="font-size: 13px; color: #555; font-style: italic;">
+            New project assignments will appear here once scheduling is enabled.
+        </p>
 
     </div>
 
     <div class="footer-branding">
-        <img src="image0-5.jpeg" alt="My Daily Reports" style="border-radius: 8px;">
-        <p>Powered by My Daily Reports</p>
+        <img src="image0-5.jpeg" alt="My Daily Reports">
+        <p>POWERED BY MY DAILY REPORTS</p>
     </div>
 </div>
 
