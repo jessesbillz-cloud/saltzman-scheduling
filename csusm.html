@@ -25,34 +25,12 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-cell.selected{background:#1e2a3a;border-radius:6px;}
 .day-cell.today .day-num{background:#5a8fc0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
 .day-cell.other-month{color:#444;}
-.day-cell.blocked{background:rgba(255,255,255,0.05);border-left:3px solid #5a8fc0;}
-.day-dot{width:80%;height:3px;border-radius:2px;margin:3px auto 0;}
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:16px;font-weight:bold;color:#5a8fc0;margin-bottom:12px;}
 .evt-row{padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #5a8fc0;font-size:13px;color:#fff;}
-.evt-row:last-child{border-bottom:none;}
-.evt-row.evt-cancelled{opacity:0.6;}
-.evt-time{color:#fff;font-weight:600;}
-.evt-type{color:#5a8fc0;}
-.evt-who{color:#888;font-size:11px;margin-top:4px;}
-.evt-notes{color:#aaa;font-size:11px;margin-top:4px;font-style:italic;}
-.no-events{color:#888;text-align:center;padding:20px;font-style:italic;}
-.evt-time{font-weight:600;color:#fff;}
-.evt-type{font-size:11px;font-weight:600;margin-left:4px;color:#888;}
-.evt-actions{margin-top:4px;}
-.evt-actions button{font-size:11px;padding:3px 10px;margin-right:6px;border-radius:4px;cursor:pointer;background:transparent;}
-.evt-actions .btn-edit{color:#e8742a;border:1px solid #e8742a;}
-.evt-actions .btn-cancel{color:#c44;border:1px solid #c44;}
-.evt-cancelled{opacity:0.4;}
-.evt-cancelled .evt-time,.evt-cancelled .evt-type{text-decoration:line-through;}
-.cancelled-label{font-size:10px;color:#c44;font-weight:600;margin-left:6px;}
-.evt-who{color:#888;font-size:12px;margin-top:2px;}
-.evt-notes{color:#666;font-size:11px;font-style:italic;margin-top:2px;}
-.no-events{color:#555;font-size:12px;padding:4px 0;}
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
-select.field-input{background:#222;color:#fff;}
 
 /* MULTI-FILE UPLOAD AREA */
 .photo-box{border:2px dashed #444;border-radius:8px;padding:20px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
@@ -72,10 +50,6 @@ select.field-input{background:#222;color:#fff;}
 .special-sub.show{display:block;}
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
 .email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
-.email-row:last-child{border-bottom:none;}
-.email-row input{width:18px;height:18px;}
-.submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;}
-.submit-btn:disabled{opacity:0.6;}
 
 /* COLLAPSIBLE SECTION STYLES */
 .collapsible-section { border-top: 1px solid #333; margin-top: 10px; padding: 5px 0; }
@@ -84,8 +58,8 @@ select.field-input{background:#222;color:#fff;}
 .collapsible-summary::after { content: '+'; font-size: 16px; font-weight: bold; }
 details[open] .collapsible-summary::after { content: '−'; }
 
+.submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;}
 .success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
-.success-view h2{margin:12px 0 8px;}
 .reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#5a8fc0;background:none;border:2px solid #5a8fc0;border-radius:8px;cursor:pointer;}
 </style>
 </head>
@@ -118,8 +92,12 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div style="padding:20px;text-align:center;">
 <img src="image0-5.jpeg" alt="Reports Logo" style="width:80px;height:80px;margin-bottom:8px;">
 <div style="font-size:24px;font-weight:bold;color:#5a8fc0;margin-bottom:4px;">My Daily Reports</div>
-<div style="font-size:13px;color:#888;margin-bottom:12px;">Professional inspection documentation</div>
 <button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;" onclick="window.open('https://mydailyreports.org','_blank')">Learn More</button>
+</div>
+</div>
+<div class="card">
+<div style="padding:16px;text-align:center;">
+<button onclick="showCalendarSubscribe()" style="background:#5a8fc0;color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;">Subscribe to Calendar</button>
 </div>
 </div>
 </div>
@@ -127,7 +105,7 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div id="requestView" class="form-wrap">
 <label class="field-label">Inspection Request Photos or PDFs *</label>
 <div class="photo-box" onclick="document.getElementById('photoIn').click()">
-    <div id="photoPrompt">&#128247; Tap to take photo, upload image, or select PDF</div>
+    <div id="photoPrompt">&#128247; Tap to select multiple photos or PDFs</div>
 </div>
 <input type="file" id="photoIn" onchange="handleFileSelection(this)" multiple style="display:none;">
 
@@ -139,14 +117,11 @@ details[open] .collapsible-summary::after { content: '−'; }
 <select id="iTime" class="field-input">
 <option value="">Select time</option>
 <option value="flexible">Flexible — anytime today</option>
-<option value="07:00">7:00 AM</option>
-<option value="09:00">9:00 AM</option>
-<option value="11:00">11:00 AM</option>
-<option value="13:00">1:00 PM</option>
-<option value="15:00">3:00 PM</option>
+<option value="07:00">7:00 AM</option><option value="09:00">9:00 AM</option>
+<option value="11:00">11:00 AM</option><option value="13:00">1:00 PM</option>
 </select>
 <label class="field-label">Inspection Request # (Optional)</label>
-<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2" maxlength="50">
+<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2">
 <label class="field-label">Duration *</label>
 <div class="dur-btns" id="durBtns">
 <div class="dur-btn" onclick="setDur('30')">30 min</div>
@@ -160,13 +135,9 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
 </div>
 <div class="special-sub" id="specialSub">
-<label class="field-label">Special Inspection Type *</label>
 <select class="field-input" id="specialType">
 <option value="">Select type</option>
-<option value="Soils">Soils</option>
-<option value="Material ID">Material ID</option>
-<option value="Concrete">Concrete</option>
-<option value="Fireproofing">Fireproofing</option>
+<option value="Soils">Soils</option><option value="Concrete">Concrete</option>
 </select>
 </div>
 <label class="field-label">Submitted By *</label>
@@ -174,162 +145,12 @@ details[open] .collapsible-summary::after { content: '−'; }
 <option value="">Select your name</option>
 <option value="Kyle Haider">Kyle Haider (CW Driver)</option>
 <option value="Mike McConkey">Mike McConkey (CW Driver)</option>
-<option value="Brayden Duzan">Brayden Duzan (CW Driver)</option>
-<option value="Matt Lulling">Matt Lulling (OCMI)</option>
 </select>
+
 <label class="field-label">Notes</label>
-<textarea id="iNotes" class="field-input" rows="3" placeholder="Additional details"></textarea>
+<textarea id="iNotes" class="field-input" rows="3" placeholder="Notes..."></textarea>
 
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
-<label class="email-row"><input type="checkbox" value="khaider@cwdriver.com" class="emailCheck">Kyle Haider</label>
-</div>
-
-<details class="collapsible-section">
-    <summary class="collapsible-summary">Additional Email Recipients</summary>
-    <div style="padding-bottom:10px;">
-        <input type="text" id="additionalEmailsList" class="field-input" placeholder="Emails separated by commas">
-        <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;color:#ccc;cursor:pointer;">
-            <input type="checkbox" id="saveEmailsCheck" style="width:18px;height:18px;"> Save these emails
-        </label>
-    </div>
-</details>
-
-<details class="collapsible-section">
-    <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
-    <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
-        <label class="field-label">Full Name</label>
-        <input type="text" id="iNewName" class="field-input">
-        <label class="field-label">Email Address</label>
-        <input type="email" id="iNewEmail" class="field-input">
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ccc;cursor:pointer;">
-            <input type="checkbox" id="saveNewPersonCheck" style="width:18px;height:18px;"> Save for future use
-        </label>
-    </div>
-</details>
-
-<button onclick="submitIR()" id="submitBtn" class="submit-btn" style="margin-top:20px;">Submit Inspection Request</button>
-</div>
-
-<div class="success-view" id="successView">
-<div style="font-size:48px;">&#9989;</div>
-<h2>Request Submitted</h2>
-<button onclick="resetForm()" class="reset-btn">Submit Another</button>
-</div>
-
-<script>
-var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
-var PROJ='CSUSM';
-var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
-var allFiles = []; // Array to store multiple files
-var inspType='',inspDur='';
-var cM=new Date().getMonth(),cY=new Date().getFullYear();
-var mD={};
-
-function handleFileSelection(input) {
-    const files = Array.from(input.files);
-    files.forEach(file => {
-        if(file.size > (file.type === 'application/pdf' ? 25*1024*1024 : 10*1024*1024)){
-            alert(file.name + " is too large.");
-            return;
-        }
-        allFiles.push(file);
-    });
-    renderFileGrid();
-    input.value = ''; // Reset input to allow re-selecting same file
-}
-
-function removeFile(index) {
-    allFiles.splice(index, 1);
-    renderFileGrid();
-}
-
-function renderFileGrid() {
-    const grid = document.getElementById('filePreviewGrid');
-    grid.innerHTML = '';
-    allFiles.forEach((file, index) => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        
-        if(file.type === 'application/pdf') {
-            item.innerHTML = `<div class="pdf-indicator">PDF<br>${file.name.substring(0,8)}...</div>`;
-        } else {
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
-            item.appendChild(img);
-        }
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.innerHTML = '&times;';
-        removeBtn.onclick = () => removeFile(index);
-        
-        item.appendChild(removeBtn);
-        grid.appendChild(item);
-    });
-}
-
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
-function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
-
-function submitIR(){
-    var d=document.getElementById('iDate').value, t=document.getElementById('iTime').value, nm=document.getElementById('iName').value;
-    if(allFiles.length === 0 || !d || !t || !inspType || !nm || !inspDur){alert('Please fill in all required fields and add at least one file.'); return;}
-    
-    var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
-    var fd=new FormData();
-    // Append all selected files
-    allFiles.forEach((file, index) => fd.append('file_' + index, file));
-    fd.append('project', PROJ);
-    fd.append('inspection_date', d);
-    fd.append('inspection_time', t);
-    fd.append('inspection_types', JSON.stringify([inspType]));
-    fd.append('duration', inspDur);
-    fd.append('submitted_by', nm);
-    fd.append('notes', document.getElementById('iNotes').value);
-
-    fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd})
-    .then(r=>r.json()).then(data=>{
-        if(data.success){
-            document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block';
-        } else { alert('Error: ' + data.error); btn.disabled=false; btn.textContent='Submit Inspection Request'; }
-    });
-}
-
-function switchTab(t){
-    document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
-    document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
-    document.getElementById('calendarView').style.display=t==='calendar'?'block':'none';
-    document.getElementById('requestView').style.display=t==='request'?'block':'none';
-}
-
-function resetForm(){ location.reload(); }
-function changeMonth(dir){ cM+=dir; if(cM>11){cM=0;cY++;} if(cM<0){cM=11;cY--;} loadMD(); }
-function pad(n){return String(n).padStart(2,'0');}
-function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
-function loadMD(){
-    var s=cY+'-'+pad(cM+1)+'-01', ed=new Date(cY,cM+1,0).getDate(), e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-    document.getElementById('monthLabel').textContent=['January','February','March','April','May','June','July','August','September','October','November','December'][cM]+' '+cY;
-    fetch(SB+'/rest/v1/inspection_requests?inspection_date=gte.'+s+'&inspection_date=lte.'+e,{headers:{'apikey':AK,'Authorization':'Bearer '+AK}})
-    .then(r=>r.json()).then(data=>{
-        mD={}; data.forEach(v=>{if(!mD[v.inspection_date])mD[v.inspection_date]=[]; mD[v.inspection_date].push(v);});
-        renderCal();
-    });
-}
-
-function renderCal(){
-    var g=document.getElementById('calGrid'); g.innerHTML='';
-    var sd=new Date(cY,cM,1).getDay(), ld=new Date(cY,cM+1,0).getDate();
-    for(var i=0;i<sd;i++) g.appendChild(document.createElement('div')).className='day-cell other-month';
-    for(var d=1;d<=ld;d++){
-        var s=ds(cY,cM,d), c=document.createElement('div');
-        c.className='day-cell'; c.innerHTML='<span class="day-num">'+d+'</span>';
-        if(mD[s]) c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;font-weight:700;">'+mD[s].length+'</div>';
-        g.appendChild(c);
-    }
-}
-loadMD();
-</script>
-</body>
-</html>
+<label class="email-row"><input type="checkbox" value="khaider@cwdriver
