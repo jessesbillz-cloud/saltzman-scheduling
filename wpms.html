@@ -7,8 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:12px;background:#111;}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.header img{width:45px;height:45px;border-radius:6px;}
+.header{margin-bottom:12px;}
 .header h2{font-size:18px;margin-bottom:2px;color:#fff;}
 .header p{color:#888;font-size:13px;}
 .tabs{display:flex;border-bottom:2px solid #333;margin-bottom:0;}
@@ -16,19 +15,27 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .tab.active{color:#e8742a;border-bottom-color:#e8742a;}
 .card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .card-top{border-radius:8px 8px 0 0;border-top:none;}
+
+/* CALENDAR & DAY DETAIL */
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
 .cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#5a8fc0;}
 .cal-nav strong{font-size:15px;color:#5a8fc0;}
 .week-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;}
 .week-header{font-size:11px;color:#666;padding:6px 0;font-weight:600;}
 .day-cell{padding:8px 4px;font-size:13px;cursor:pointer;min-height:40px;color:#ccc;}
-.day-cell:hover{background:#222;}
 .day-cell.selected{background:#1e2a3a;border-radius:6px;}
 .day-cell.today .day-num{background:#5a8fc0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
-.day-dot{width:80%;height:3px;border-radius:2px;margin:3px auto 0;}
+.day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
+.day-detail-header{font-size:16px;font-weight:bold;color:#5a8fc0;margin-bottom:12px;}
 .evt-row{padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #5a8fc0;font-size:13px;color:#fff;}
-.evt-time{color:#fff;font-weight:600;}
-.evt-type{color:#5a8fc0;}
+
+/* EVENT ACTIONS (EDIT/CANCEL) */
+.evt-actions { display: flex; gap: 8px; margin-top: 8px; }
+.btn-edit, .btn-cancel { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; background: transparent; text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-edit { color: #e8742a; border: 1px solid #e8742a; }
+.btn-cancel { color: #c44; border: 1px solid #c44; }
+
+/* FORM ELEMENTS */
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
@@ -52,176 +59,170 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
 .email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
 
-/* COLLAPSIBLE SECTIONS */
+/* COLLAPSIBLE LINKS */
 .collapsible-section { border-top: 1px solid #333; margin-top: 10px; padding: 5px 0; }
 .collapsible-summary { padding: 10px 0; font-size: 13px; color: #5a8fc0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
 .collapsible-summary::-webkit-details-marker { display: none; }
 .collapsible-summary::after { content: '+'; font-size: 16px; font-weight: bold; }
 details[open] .collapsible-summary::after { content: '−'; }
 
-.submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;}
+.submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;margin-top:20px;}
 .success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
 .reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#5a8fc0;background:none;border:2px solid #5a8fc0;border-radius:8px;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="header">
-    <img src="image0-5.jpeg" alt="Logo">
-    <div>
-        <h2>Inspection Request</h2>
-        <p>Woodland Park MOD — Lusardi</p>
-    </div>
+<h2>Inspection Request</h2>
+<p>Woodland Park MOD — Lusardi</p>
 </div>
-
 <div class="tabs" id="tabBar">
-    <div class="tab active" onclick="switchTab('calendar')">Calendar</div>
-    <div class="tab" onclick="switchTab('request')">New Request</div>
+<div class="tab active" onclick="switchTab('calendar')">Calendar</div>
+<div class="tab" onclick="switchTab('request')">New Request</div>
 </div>
-
 <div id="calendarView">
-    <div class="card card-top" style="border-radius:0;">
-        <div class="cal-nav">
-            <button onclick="changeMonth(-1)">&larr;</button>
-            <strong id="monthLabel"></strong>
-            <button onclick="changeMonth(1)">&rarr;</button>
-        </div>
-        <div class="week-row" style="padding:0 8px;">
-            <div class="week-header">S</div><div class="week-header">M</div><div class="week-header">T</div><div class="week-header">W</div><div class="week-header">T</div><div class="week-header">F</div><div class="week-header">S</div>
-        </div>
-        <div id="calGrid" class="week-row" style="padding:0 8px;"></div>
-        
-        <details id="dayDetailBox" class="collapsible-section" style="border-top:1px solid #333; display:none;">
-            <summary class="collapsible-summary" id="dayDetailHeader" style="padding:12px 14px; font-size:15px;">Selected Day Schedule</summary>
-            <div id="dayDetailList" style="padding:0 14px 14px;"></div>
-        </details>
-    </div>
-
-    <div class="card">
-        <div style="padding:20px;text-align:center;">
-            <img src="image0-5.jpeg" alt="Logo" style="width:70px;height:70px;margin-bottom:8px;">
-            <div style="font-size:22px;font-weight:bold;color:#5a8fc0;">My Daily Reports</div>
-            <button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;margin-top:10px;" onclick="window.open('https://mydailyreports.org','_blank')">Learn More</button>
-        </div>
-    </div>
-    
-    <div class="card" style="padding:16px;text-align:center;">
-        <button onclick="showCalendarSubscribe()" style="background:#5a8fc0;color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;">Subscribe to Calendar</button>
-    </div>
+<div class="card card-top" style="border-top:none;border-radius:0;">
+<div class="cal-nav">
+<button onclick="changeMonth(-1)">&larr;</button>
+<strong id="monthLabel"></strong>
+<button onclick="changeMonth(1)">&rarr;</button>
+</div>
+<div class="week-row" style="padding:0 8px;">
+<div class="week-header">S</div><div class="week-header">M</div><div class="week-header">T</div><div class="week-header">W</div><div class="week-header">T</div><div class="week-header">F</div><div class="week-header">S</div>
+</div>
+<div id="calGrid" class="week-row" style="padding:0 8px;"></div>
+<div class="day-detail" id="dayDetail">
+<div class="day-detail-header" id="dayDetailHeader"></div>
+<div id="dayDetailList"></div>
+</div>
+</div>
+<div class="card">
+<div style="padding:20px;text-align:center;">
+<img src="image0-5.jpeg" alt="Logo" style="width:70px;height:70px;margin-bottom:8px;">
+<div style="font-size:22px;font-weight:bold;color:#5a8fc0;">My Daily Reports</div>
+<button style="padding:8px 16px;font-size:13px;font-weight:600;color:#fff;background:#e8742a;border:none;border-radius:6px;cursor:pointer;margin-top:10px;" onclick="window.open('https://mydailyreports.org','_blank')">Learn More</button>
+</div>
+</div>
+<div class="card">
+<div style="padding:16px;text-align:center;">
+<button onclick="showCalendarSubscribe()" style="background:#5a8fc0;color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;">Subscribe to Calendar</button>
+</div>
+</div>
 </div>
 
 <div id="requestView" class="form-wrap">
-    <label class="field-label">Photos or PDFs *</label>
-    <div class="photo-box" onclick="document.getElementById('photoIn').click()">
-        <div id="photoPrompt">&#128247; Tap to select multiple photos or PDFs</div>
+<label class="field-label">Photos or PDFs *</label>
+<div class="photo-box" onclick="document.getElementById('photoIn').click()">
+    <div id="photoPrompt">&#128247; Tap to select multiple photos or PDFs</div>
+</div>
+<input type="file" id="photoIn" onchange="handleFileSelection(this)" multiple style="display:none;">
+<div id="filePreviewGrid" class="file-list-container"></div>
+
+<label class="field-label">Inspection Date *</label>
+<input type="date" id="iDate" class="field-input">
+
+<label class="field-label">Inspection Time *</label>
+<select id="iTime" class="field-input">
+<option value="">Select time</option>
+<option value="flexible">Flexible — anytime today</option>
+<option value="05:00">5:00 AM</option><option value="05:30">5:30 AM</option>
+<option value="06:00">6:00 AM</option><option value="06:30">6:30 AM</option>
+<option value="07:00">7:00 AM</option><option value="07:30">7:30 AM</option>
+<option value="08:00">8:00 AM</option><option value="08:30">8:30 AM</option>
+<option value="09:00">9:00 AM</option><option value="09:30">9:30 AM</option>
+<option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option>
+<option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option>
+<option value="12:00">12:00 PM</option><option value="12:30">12:30 PM</option>
+<option value="13:00">1:00 PM</option><option value="13:30">1:30 PM</option>
+<option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option>
+<option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
+<option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
+<option value="17:00">5:00 PM</option>
+</select>
+
+<label class="field-label">Inspection Request # or Summary (Optional)</label>
+<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2" maxlength="50">
+
+<label class="field-label">Duration *</label>
+<div class="dur-btns" id="durBtns">
+<div class="dur-btn" onclick="setDur('30')">30 min</div>
+<div class="dur-btn" onclick="setDur('60')">1 hr</div>
+<div class="dur-btn" onclick="setDur('120')">2 hr</div>
+<div class="dur-btn" onclick="setDur('240')">4 hr</div>
+<div class="dur-btn" onclick="setDur('480')">All Day</div>
+</div>
+
+<label class="field-label">Inspection Type *</label>
+<div class="type-btns">
+<div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
+<div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
+</div>
+
+<div class="special-sub" id="specialSub">
+<label class="field-label">Special Inspection Type *</label>
+<select class="field-input" id="specialType">
+<option value="">Select type</option>
+<option value="Soils">Soils</option><option value="Material ID">Material ID</option>
+<option value="Material ID CWI">Material ID CWI</option><option value="Concrete">Concrete</option>
+<option value="Bolting">Bolting</option><option value="Pull Test">Pull Test</option>
+<option value="Shotcrete">Shotcrete</option><option value="Fireproofing">Fireproofing</option>
+</select>
+</div>
+
+<label class="field-label">Submitted By *</label>
+<select id="iName" class="field-input">
+<option value="">Select your name</option>
+<option value="other">-- Add name below --</option>
+<option value="Jesse Saltzman">Jesse Saltzman</option>
+<option value="Ron Davis">Ron Davis</option>
+<option value="Scuyler Beltran">Scuyler Beltran</option>
+<option value="Alejandro Martinez">Alejandro Martinez</option>
+</select>
+
+<label class="field-label">Notes</label>
+<textarea id="iNotes" class="field-input" rows="3" placeholder="Optional details"></textarea>
+
+<label class="field-label">Send a copy to:</label>
+<div class="email-list">
+<label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
+<label class="email-row"><input type="checkbox" value="rdavis@lusardi.com" class="emailCheck">Ron Davis (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="sbeltran@lusardi.com" class="emailCheck">Scuyler Beltran (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="amartinez@lusardi.com" class="emailCheck">Alejandro Martinez (Lusardi)</label>
+</div>
+
+<details class="collapsible-section">
+    <summary class="collapsible-summary">Additional Email Recipients</summary>
+    <div style="padding-bottom:10px;">
+        <input type="text" id="additionalEmailsList" class="field-input" placeholder="Emails separated by commas">
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;color:#ccc;cursor:pointer;">
+            <input type="checkbox" id="saveEmailsCheck"> Save these emails
+        </label>
     </div>
-    <input type="file" id="photoIn" onchange="handleFileSelection(this)" multiple style="display:none;">
-    <div id="filePreviewGrid" class="file-list-container"></div>
+</details>
 
-    <label class="field-label">Inspection Date *</label>
-    <input type="date" id="iDate" class="field-input">
-
-    <label class="field-label">Inspection Time *</label>
-    <select id="iTime" class="field-input">
-        <option value="">Select time</option>
-        <option value="flexible">Flexible — anytime today</option>
-        <option value="05:00">5:00 AM</option><option value="05:30">5:30 AM</option>
-        <option value="06:00">6:00 AM</option><option value="06:30">6:30 AM</option>
-        <option value="07:00">7:00 AM</option><option value="07:30">7:30 AM</option>
-        <option value="08:00">8:00 AM</option><option value="08:30">8:30 AM</option>
-        <option value="09:00">9:00 AM</option><option value="09:30">9:30 AM</option>
-        <option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option>
-        <option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option>
-        <option value="12:00">12:00 PM</option><option value="12:30">12:30 PM</option>
-        <option value="13:00">1:00 PM</option><option value="13:30">1:30 PM</option>
-        <option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option>
-        <option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
-        <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
-        <option value="17:00">5:00 PM</option>
-    </select>
-
-    <label class="field-label">Inspection Request # or description (Optional)</label>
-    <input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2" maxlength="50">
-
-    <label class="field-label">Duration *</label>
-    <div class="dur-btns" id="durBtns">
-        <div class="dur-btn" onclick="setDur('30')">30 min</div>
-        <div class="dur-btn" onclick="setDur('60')">1 hr</div>
-        <div class="dur-btn" onclick="setDur('120')">2 hr</div>
-        <div class="dur-btn" onclick="setDur('240')">4 hr</div>
-        <div class="dur-btn" onclick="setDur('480')">All Day</div>
+<details class="collapsible-section">
+    <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
+    <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
+        <div style="color:#5a8fc0;font-weight:600;margin-bottom:8px;">Don't see your name? Add it below:</div>
+        <label class="field-label">Your Name</label>
+        <input type="text" id="iNewName" class="field-input">
+        <label class="field-label">Your Email</label>
+        <input type="email" id="iNewEmail" class="field-input">
+        <label class="field-label">Company/Role</label>
+        <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (Lusardi), (Subcontractor)">
+        <label style="display:flex;align-items:center;gap:8px;margin-size:13px;color:#ccc;cursor:pointer;">
+            <input type="checkbox" id="saveNewPersonCheck"> Save for future use
+        </label>
     </div>
+</details>
 
-    <label class="field-label">Inspection Type *</label>
-    <div class="type-btns">
-        <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
-        <div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
-    </div>
-
-    <div class="special-sub" id="specialSub">
-        <label class="field-label">Special Inspection Type *</label>
-        <select class="field-input" id="specialType">
-            <option value="">Select type</option>
-            <option value="Soils">Soils</option><option value="Material ID">Material ID</option>
-            <option value="Material ID CWI">Material ID CWI</option><option value="Concrete">Concrete</option>
-            <option value="Bolting">Bolting</option><option value="Pull Test">Pull Test</option>
-            <option value="Shotcrete">Shotcrete</option><option value="Fireproofing">Fireproofing</option>
-        </select>
-    </div>
-
-    <label class="field-label">Submitted By *</label>
-    <select id="iName" class="field-input">
-        <option value="">Select your name</option>
-        <option value="other">-- Add name below --</option>
-        <option value="Jesse Saltzman">Jesse Saltzman</option>
-        <option value="Ron Davis">Ron Davis</option>
-        <option value="Scuyler Beltran">Scuyler Beltran</option>
-        <option value="Alejandro Martinez">Alejandro Martinez</option>
-    </select>
-
-    <label class="field-label">Notes</label>
-    <textarea id="iNotes" class="field-input" rows="3" placeholder="Optional details"></textarea>
-
-    <label class="field-label">Send a copy to:</label>
-    <div class="email-list">
-        <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
-        <label class="email-row"><input type="checkbox" value="rdavis@lusardi.com" class="emailCheck">Ron Davis (Lusardi)</label>
-        <label class="email-row"><input type="checkbox" value="sbeltran@lusardi.com" class="emailCheck">Scuyler Beltran (Lusardi)</label>
-        <label class="email-row"><input type="checkbox" value="amartinez@lusardi.com" class="emailCheck">Alejandro Martinez (Lusardi)</label>
-    </div>
-
-    <details class="collapsible-section">
-        <summary class="collapsible-summary">Additional Email Recipients</summary>
-        <div style="padding-bottom:10px;">
-            <input type="text" id="additionalEmailsList" class="field-input" placeholder="Emails separated by commas">
-            <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;color:#ccc;cursor:pointer;">
-                <input type="checkbox" id="saveEmailsCheck"> Save these emails
-            </label>
-        </div>
-    </details>
-
-    <details class="collapsible-section">
-        <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
-        <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
-            <div style="color:#5a8fc0;font-weight:600;margin-bottom:8px;">Don't see your name? Add it below:</div>
-            <label class="field-label">Your Name</label>
-            <input type="text" id="iNewName" class="field-input">
-            <label class="field-label">Your Email</label>
-            <input type="email" id="iNewEmail" class="field-input">
-            <label class="field-label">Company/Role</label>
-            <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (Lusardi), (Subcontractor)">
-            <label style="display:flex;align-items:center;gap:8px;margin-size:13px;color:#ccc;cursor:pointer;">
-                <input type="checkbox" id="saveNewPersonCheck"> Save for future use
-            </label>
-        </div>
-    </details>
-
-    <button onclick="submitIR()" id="submitBtn" class="submit-btn" style="margin-top:20px;">Submit Inspection Request</button>
+<button onclick="submitIR()" id="submitBtn" class="submit-btn">Submit Inspection Request</button>
 </div>
 
 <div class="success-view" id="successView">
-    <div style="font-size:48px;">&#9989;</div>
-    <h2>Request Submitted</h2>
-    <button onclick="resetForm()" class="reset-btn">Submit Another</button>
+<div style="font-size:48px;">&#9989;</div>
+<h2>Request Submitted</h2>
+<button onclick="resetForm()" class="reset-btn">Submit Another</button>
 </div>
 
 <script>
@@ -259,14 +260,11 @@ function renderFileGrid() {
         item.appendChild(removeBtn); grid.appendChild(item);
     });
 }
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
-function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
 
 function showDay(d){
     const list = document.getElementById('dayDetailList');
     const header = document.getElementById('dayDetailHeader');
-    const box = document.getElementById('dayDetailBox');
-    
+    const box = document.getElementById('dayDetail');
     header.textContent = "Schedule for " + d;
     const evts = mD[d] || [];
     if(evts.length === 0){
@@ -274,16 +272,22 @@ function showDay(d){
     } else {
         let html = '';
         evts.forEach(e => {
-            html += `<div class="evt-row">
+            var isCancelled=(e.status==='cancelled');
+            html += `<div class="evt-row ${isCancelled?'evt-cancelled':''}">
                 <span class="evt-time">${e.flexible_display === 'flexible' ? 'Flexible' : e.inspection_time.substring(0,5)}</span>
                  — <span class="evt-type">${(e.inspection_types || []).join(', ')}</span>
                 <div style="font-size:11px;color:#888;margin-top:4px;">By: ${e.submitted_by}</div>
+                ${!isCancelled && e.project===PROJ ? `
+                    <div class="evt-actions">
+                        <button class="btn-edit" onclick="editInsp('${e.id}','${e.inspection_date}','${e.inspection_time.substring(0,5)}')">Edit</button>
+                        <button class="btn-cancel" onclick="cancelInsp('${e.id}','${e.project}','IOR','${e.inspection_date}','${e.inspection_time.substring(0,5)}')">Cancel</button>
+                    </div>
+                ` : ''}
             </div>`;
         });
         list.innerHTML = html;
     }
     box.style.display = 'block';
-    box.open = true;
 }
 
 function showCalendarSubscribe(){
@@ -304,9 +308,9 @@ modal.innerHTML = `
 </div></div>`;
 document.body.appendChild(modal); window.currentCalendarModal = modal;
 }
+
 function copyCalendarURL() { navigator.clipboard.writeText('https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS'); document.getElementById('copyBtn').textContent = '✅ URL Copied!'; }
 function closeCalendarModal() { if(window.currentCalendarModal) {window.currentCalendarModal.remove(); window.currentCalendarModal = null;}}
-
 function switchTab(t){
 document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
@@ -314,7 +318,8 @@ document.getElementById('calendarView').style.display=t==='calendar'?'block':'no
 document.getElementById('requestView').style.display=t==='request'?'block':'none';
 }
 function changeMonth(dir){ cM+=dir; if(cM>11){cM=0;cY++;} if(cM<0){cM=11;cY--;} loadMD(); }
-function ds(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+function pad(n){return String(n).padStart(2,'0');}
+function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
 function loadMD(){
     fetch(SB+'/rest/v1/inspection_requests?project=eq.'+PROJ,{headers:{'apikey':AK,'Authorization':'Bearer '+AK}})
     .then(r=>r.json()).then(data=>{
@@ -335,23 +340,14 @@ function renderCal(){
         g.appendChild(c);
     }
 }
-
-function saveNewPersonForFuture(){
-    var name = document.getElementById('iNewName').value.trim(), email = document.getElementById('iNewEmail').value.trim(), comp = document.getElementById('iNewCompany').value.trim();
-    if(document.getElementById('saveNewPersonCheck').checked && name && email){
-        var saved = JSON.parse(localStorage.getItem('savedInspectorPeople') || '[]');
-        saved.push({name: name, email: email, display: comp ? name+' '+comp : name});
-        localStorage.setItem('savedInspectorPeople', JSON.stringify(saved));
-        location.reload();
-    }
-}
-
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
+function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+function resetForm(){ location.reload(); }
 function submitIR(){
     var d=document.getElementById('iDate').value, t=document.getElementById('iTime').value, nm=document.getElementById('iName').value;
     var newName = document.getElementById('iNewName').value.trim();
-    if((!nm || nm === 'other') && newName){ nm = newName; saveNewPersonForFuture(); }
+    if((!nm || nm === 'other') && newName){ nm = newName; }
     if(!nm || allFiles.length === 0 || !d || !t || !inspType || !inspDur){alert('Missing required fields.'); return;}
-    
     var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
     var fd=new FormData();
     allFiles.forEach((file, index) => fd.append('file_' + index, file));
@@ -359,7 +355,6 @@ function submitIR(){
     fd.append('inspection_date', d); fd.append('inspection_time', t);
     fd.append('inspection_types', JSON.stringify([inspType])); fd.append('duration', inspDur);
     fd.append('submitted_by', nm); fd.append('notes', document.getElementById('iNotes').value);
-    
     fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd})
     .then(r=>r.json()).then(data=>{
         if(data.success){ document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block'; } 
