@@ -15,8 +15,6 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .tab.active{color:#e8742a;border-bottom-color:#e8742a;}
 .card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .card-top{border-radius:8px 8px 0 0;border-top:none;}
-
-/* CALENDAR STYLES */
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
 .cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#5a8fc0;}
 .cal-nav strong{font-size:15px;color:#5a8fc0;}
@@ -29,13 +27,11 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:16px;font-weight:bold;color:#5a8fc0;margin-bottom:12px;}
 .evt-row{padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #5a8fc0;font-size:13px;color:#fff;}
-
-/* FORM STYLES */
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
 
-/* MULTI-FILE UPLOAD AREA */
+/* MULTI-FILE SYSTEM */
 .photo-box{border:2px dashed #444;border-radius:8px;padding:20px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
 .file-list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .file-item { position: relative; aspect-ratio: 1/1; background: #222; border: 1px solid #333; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -49,8 +45,9 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .dur-btns{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .dur-btn{padding:10px 0;font-size:13px;font-weight:600;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;flex:1;min-width:55px;}
 .dur-btn.active{background:#e8742a;color:#fff;border-color:#5a8fc0;}
+.email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
+.email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
 
-/* COLLAPSIBLE SECTION STYLES */
 .collapsible-section { border-top: 1px solid #333; margin-top: 10px; padding: 5px 0; }
 .collapsible-summary { padding: 10px 0; font-size: 13px; color: #5a8fc0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
 .collapsible-summary::-webkit-details-marker { display: none; }
@@ -107,7 +104,6 @@ details[open] .collapsible-summary::after { content: '−'; }
     <div id="photoPrompt">&#128247; Tap to select multiple photos or PDFs</div>
 </div>
 <input type="file" id="photoIn" onchange="handleFileSelection(this)" multiple style="display:none;">
-
 <div id="filePreviewGrid" class="file-list-container"></div>
 
 <label class="field-label">Inspection Date *</label>
@@ -118,6 +114,7 @@ details[open] .collapsible-summary::after { content: '−'; }
 <option value="flexible">Flexible — anytime today</option>
 <option value="07:00">7:00 AM</option><option value="09:00">9:00 AM</option>
 <option value="11:00">11:00 AM</option><option value="13:00">1:00 PM</option>
+<option value="15:00">3:00 PM</option>
 </select>
 <label class="field-label">Inspection Request # or Description (Optional)</label>
 <input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2">
@@ -160,34 +157,6 @@ details[open] .collapsible-summary::after { content: '−'; }
 </div>
 
 <details class="collapsible-section">
-    <summary class="collapsible-summary">iPhone Calendar Setup Instructions</summary>
-    <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #e8742a;margin-bottom:10px;">
-        <div style="color:#e8742a;font-weight:600;margin-bottom:10px;">iPhone Steps:</div>
-        <div style="font-size:13px;color:#ccc;line-height:1.6;">
-            1. Settings → Calendar → Accounts<br>
-            2. "Add Account" → "Other"<br>
-            3. "Add Subscribed Calendar"<br>
-            4. Paste the Project URL (from the button below)<br>
-            5. Done!
-        </div>
-    </div>
-</details>
-
-<details class="collapsible-section">
-    <summary class="collapsible-summary">Android/Desktop Calendar Setup Instructions</summary>
-    <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
-        <div style="color:#5a8fc0;font-weight:600;margin-bottom:10px;">Android/Google Steps:</div>
-        <div style="font-size:13px;color:#ccc;line-height:1.6;">
-            1. Open Google Calendar on a computer (desktop).<br>
-            2. Next to "Other calendars," click the (+).<br>
-            3. Select "From URL."<br>
-            4. Paste the Project URL.<br>
-            5. Ensure "Sync" is on in your phone's Calendar App settings.
-        </div>
-    </div>
-</details>
-
-<details class="collapsible-section">
     <summary class="collapsible-summary">Additional Email Recipients</summary>
     <div style="padding-bottom:10px;">
         <input type="text" id="additionalEmailsList" class="field-input" placeholder="Emails separated by commas">
@@ -228,6 +197,47 @@ var inspType='',inspDur='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={};
 
+function showCalendarSubscribe(){
+var modal = document.createElement('div');
+modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+modal.innerHTML = `
+<div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
+<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to WPMS Calendar</h2></div>
+<div style="padding:30px;text-align:center;">
+<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Copy the URL below to sync this jobsite schedule to your phone:</p>
+<div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
+<div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">PROJECT URL:</div>
+<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS</div>
+<div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy URL</div>
+</div>
+
+<details class="collapsible-section" style="text-align:left;">
+    <summary class="collapsible-summary">iPhone Setup Instructions</summary>
+    <div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">
+        1. Settings → Calendar → Accounts<br>
+        2. "Add Account" → "Other"<br>
+        3. "Add Subscribed Calendar"<br>
+        4. Paste the Project URL above<br>
+        5. Done!
+    </div>
+</details>
+
+<details class="collapsible-section" style="text-align:left;">
+    <summary class="collapsible-summary">Android / Google Setup Instructions</summary>
+    <div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">
+        1. Open Google Calendar on a desktop browser.<br>
+        2. Next to "Other calendars," click (+).<br>
+        3. Select "From URL."<br>
+        4. Paste the Project URL above.<br>
+        5. Ensure "Sync" is on in your phone's Calendar App settings.
+    </div>
+</details>
+
+<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-top:20px;">Got It</button>
+</div></div>`;
+document.body.appendChild(modal); window.currentCalendarModal = modal;
+}
+
 function handleFileSelection(input) {
     const files = Array.from(input.files);
     files.forEach(file => {
@@ -236,12 +246,9 @@ function handleFileSelection(input) {
         }
         allFiles.push(file);
     });
-    renderFileGrid();
-    input.value = ''; 
+    renderFileGrid(); input.value = ''; 
 }
-
 function removeFile(index) { allFiles.splice(index, 1); renderFileGrid(); }
-
 function renderFileGrid() {
     const grid = document.getElementById('filePreviewGrid');
     grid.innerHTML = '';
@@ -260,32 +267,12 @@ function renderFileGrid() {
         item.appendChild(removeBtn); grid.appendChild(item);
     });
 }
-
-function showCalendarSubscribe(){
-var modal = document.createElement('div');
-modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
-modal.innerHTML = `
-<div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
-<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to WPMS Calendar</h2></div>
-<div style="padding:30px;text-align:center;">
-<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Copy this URL to use in the device setup guides:</p>
-<div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
-<div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">PROJECT URL:</div>
-<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS</div>
-<div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy URL</div>
-</div>
-<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Got It</button>
-</div></div>`;
-document.body.appendChild(modal); window.currentCalendarModal = modal;
-}
-
 function copyCalendarURL() {
 var url = 'https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS';
 navigator.clipboard.writeText(url).then(function() {
 var btn = document.getElementById('copyBtn'); btn.style.color = '#4CAF50'; btn.innerHTML = '✅ URL Copied!';
 });
 }
-
 function closeCalendarModal() { if(window.currentCalendarModal) {window.currentCalendarModal.remove(); window.currentCalendarModal = null;}}
 function switchTab(t){
 document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
@@ -318,32 +305,24 @@ g.appendChild(c);
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
-
+function resetForm(){ location.reload(); }
 function submitIR(){
     var d=document.getElementById('iDate').value, t=document.getElementById('iTime').value, nm=document.getElementById('iName').value;
     if(allFiles.length === 0 || !d || !t || !inspType || !nm || !inspDur){alert('Missing required fields.'); return;}
-    
     var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
     var fd=new FormData();
     allFiles.forEach((file, index) => fd.append('file_' + index, file));
-    fd.append('project', PROJ);
-    fd.append('inspection_date', d);
-    fd.append('inspection_time', t);
-    fd.append('inspection_types', JSON.stringify([inspType]));
-    fd.append('duration', inspDur);
-    fd.append('submitted_by', nm);
-    fd.append('notes', document.getElementById('iNotes').value);
+    fd.append('project', PROJ); fd.append('inspection_date', d); fd.append('inspection_time', t);
+    fd.append('inspection_types', JSON.stringify([inspType])); fd.append('duration', inspDur);
+    fd.append('submitted_by', nm); fd.append('notes', document.getElementById('iNotes').value);
     var identifier = document.getElementById('iIdentifier').value.trim();
     if(identifier) fd.append('inspection_identifier', identifier);
-
     fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd})
     .then(r=>r.json()).then(data=>{
-        if(data.success){
-            document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block';
-        } else { alert('Error: ' + data.error); btn.disabled=false; btn.textContent='Submit Request'; }
+        if(data.success){ document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block'; } 
+        else { alert('Error: ' + data.error); btn.disabled=false; btn.textContent='Submit Request'; }
     });
 }
-function resetForm(){ location.reload(); }
 loadMD();
 </script>
 </body>
