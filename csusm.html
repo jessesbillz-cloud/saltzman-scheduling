@@ -72,14 +72,6 @@ select.field-input{background:#222;color:#fff;}
 .success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
 .success-view h2{margin:12px 0 8px;}
 .reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#5a8fc0;background:none;border:2px solid #5a8fc0;border-radius:8px;cursor:pointer;}
-
-/* New Collapsible Section Styles */
-.collapsible-section {border-top: 1px solid #333; margin-top: 10px; padding: 5px 0;}
-.collapsible-summary {padding: 10px 0; font-size: 13px; color: #5a8fc0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;}
-.collapsible-summary::-webkit-details-marker { display: none; }
-.collapsible-summary::after { content: '+'; font-size: 16px; font-weight: bold; }
-details[open] .collapsible-summary::after { content: '−'; }
-.collapsible-content { padding: 10px 0; }
 </style>
 </head>
 <body>
@@ -130,11 +122,10 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div id="requestView" class="form-wrap">
 <label class="field-label">Photo or PDF of Inspection Request *</label>
 <div class="photo-box" id="photoBox" onclick="document.getElementById('photoIn').click()">
-<div id="photoPrompt">&#128247; Tap to take photo, upload image, or select PDF</div>
-<img id="photoPreview" style="display:none;max-width:100%;max-height:250px;border-radius:4px;">
-<div id="pdfLabel" style="display:none;font-size:15px;color:#2d7a3a;font-weight:bold;padding:10px;"></div>
+<div id="photoPrompt">&#128247; Upload photos and PDFs (up to 3 files)</div>
+<div id="filesList" style="display:none;"></div>
 </div>
-<input type="file" id="photoIn" onchange="showPhoto(this)" style="display:none;">
+<input type="file" id="photoIn" onchange="showPhoto(this)" style="display:none;" multiple accept="image/*,.pdf">
 <label class="field-label">Inspection Date *</label>
 <input type="date" id="iDate" class="field-input">
 <label class="field-label">Inspection Time *</label>
@@ -154,6 +145,7 @@ details[open] .collapsible-summary::after { content: '−'; }
 <option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
 <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
 <option value="17:00">5:00 PM</option>
+</select>
 </select>
 <label class="field-label">Inspection Request # or Summary (Optional)</label>
 <input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, BEAM-12, SLAB-B2" maxlength="50">
@@ -185,17 +177,28 @@ details[open] .collapsible-summary::after { content: '−'; }
 </select>
 </div>
 <label class="field-label">Submitted By *</label>
-<select id="iName" class="field-input">
+<select id="iName" class="field-input" onchange="toggleOtherName()">
 <option value="">Select your name</option>
 <option value="Kyle Haider">Kyle Haider (CW Driver)</option>
 <option value="Mike McConkey">Mike McConkey (CW Driver)</option>
 <option value="Brayden Duzan">Brayden Duzan (CW Driver)</option>
 <option value="Matt Lulling">Matt Lulling (OCMI)</option>
 </select>
-
+<div style="margin:20px 0;padding:20px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
+<div style="color:#5a8fc0;font-weight:600;margin-bottom:8px;">Don't see your name? Add it below:</div>
+<label class="field-label">Your Name</label>
+<input type="text" id="iNewName" class="field-input" placeholder="Enter your full name">
+<label class="field-label">Your Email</label>
+<input type="email" id="iNewEmail" class="field-input" placeholder="Enter your email address">
+<label class="field-label">Company/Role</label>
+<input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (CW Driver), (OCMI), (Testing Lab)">
+<label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:13px;color:#ccc;cursor:pointer;">
+<input type="checkbox" id="saveNewPersonCheck" style="width:18px;height:18px;">
+Save this person to the dropdown for future use
+</label>
+</div>
 <label class="field-label">Notes</label>
 <textarea id="iNotes" class="field-input" rows="3" placeholder="Optional — any additional details" style="resize:vertical;"></textarea>
-
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
@@ -204,39 +207,13 @@ details[open] .collapsible-summary::after { content: '−'; }
 <label class="email-row"><input type="checkbox" value="bduzan@cwdriver.com" class="emailCheck">Brayden Duzan (CW Driver)</label>
 <label class="email-row"><input type="checkbox" value="mlulling@ocmi.com" class="emailCheck">Matt Lulling (OCMI)</label>
 </div>
-
-<details class="collapsible-section">
-    <summary class="collapsible-summary">Additional Email Recipients</summary>
-    <div class="collapsible-content">
-        <label class="field-label">Additional emails (optional)</label>
-        <input type="text" id="additionalEmailsList" class="field-input" placeholder="Enter emails separated by commas" style="font-size:13px;">
-        <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#ccc;cursor:pointer;">
-        <input type="checkbox" id="saveEmailsCheck" style="width:18px;height:18px;">
-        Save these emails for future requests
-        </label>
-    </div>
-</details>
-
-<details class="collapsible-section">
-    <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
-    <div class="collapsible-content">
-        <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
-            <div style="color:#5a8fc0;font-weight:600;margin-bottom:8px;">Don't see your name? Add it below:</div>
-            <label class="field-label">Your Name</label>
-            <input type="text" id="iNewName" class="field-input" placeholder="Enter your full name">
-            <label class="field-label">Your Email</label>
-            <input type="email" id="iNewEmail" class="field-input" placeholder="Enter your email address">
-            <label class="field-label">Company/Role</label>
-            <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (CW Driver), (Testing Lab)">
-            <label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:13px;color:#ccc;cursor:pointer;">
-            <input type="checkbox" id="saveNewPersonCheck" style="width:18px;height:18px;">
-            Save this person for future use
-            </label>
-        </div>
-    </div>
-</details>
-
-<button onclick="submitIR()" id="submitBtn" class="submit-btn" style="margin-top:20px;">Submit Inspection Request</button>
+<label class="field-label">Additional emails (optional)</label>
+<input type="text" id="additionalEmailsList" class="field-input" placeholder="Enter additional emails separated by commas" style="font-size:13px;">
+<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#ccc;cursor:pointer;">
+<input type="checkbox" id="saveEmailsCheck" style="width:18px;height:18px;">
+Save these emails for future requests
+</label>
+<button onclick="submitIR()" id="submitBtn" class="submit-btn">Submit Inspection Request</button>
 </div>
 <div class="success-view" id="successView">
 <div style="font-size:48px;">&#9989;</div>
@@ -255,6 +232,7 @@ var mD={},selDate=null,allEvents=[];
 var DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmt(t){var h=parseInt(t.split(':')[0]),m=t.split(':')[1],a=h>=12?'PM':'AM';if(h>12)h-=12;if(h===0)h=12;return h+':'+m+' '+a;}
+function pad(n){return n<10?'0'+n:n;}
 function pad(n){return String(n).padStart(2,'0');}
 function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
 function fmtDate(s){var p=s.split('-');var dt=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));return DN[dt.getDay()]+' '+parseInt(p[1])+'.'+parseInt(p[2])+'.'+p[0].substring(2);}
@@ -263,6 +241,55 @@ document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
 document.getElementById('calendarView').style.display=t==='calendar'?'block':'none';
 document.getElementById('requestView').style.display=t==='request'?'block':'none';
+}
+function checkForNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+if(!emailText)return;
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+document.getElementById('newEmailsList').textContent=newEmails.join(', ');
+document.getElementById('saveEmailPrompt').style.display='block';
+}
+}
+function getExistingEmails(){
+var existing=[];
+document.querySelectorAll('.emailCheck').forEach(function(cb){existing.push(cb.value.toLowerCase());});
+var saved=localStorage.getItem('permanentEmails');
+if(saved){existing=existing.concat(JSON.parse(saved).map(function(e){return e.toLowerCase();}));}
+return existing;
+}
+function saveNewEmails(){
+var emailText=document.getElementById('additionalEmailsList').value.trim();
+var emails=emailText.split(',').map(function(e){return e.trim();}).filter(function(e){return e&&e.includes('@');});
+var existingEmails=getExistingEmails();
+var newEmails=emails.filter(function(e){return !existingEmails.includes(e.toLowerCase());});
+if(newEmails.length>0){
+var saved=localStorage.getItem('permanentEmails');
+var permanentEmails=saved?JSON.parse(saved):[];
+permanentEmails=permanentEmails.concat(newEmails);
+localStorage.setItem('permanentEmails',JSON.stringify(permanentEmails));
+addPermanentEmailCheckboxes();
+}
+dismissSavePrompt();
+}
+function dismissSavePrompt(){
+document.getElementById('saveEmailPrompt').style.display='none';
+}
+function addPermanentEmailCheckboxes(){
+var saved=localStorage.getItem('permanentEmails');
+if(!saved)return;
+var emails=JSON.parse(saved);
+var emailList=document.querySelector('.email-list');
+emails.forEach(function(email){
+if(!document.querySelector('.emailCheck[value="'+email+'"]')){
+var label=document.createElement('label');
+label.className='email-row';
+label.innerHTML='<input type="checkbox" value="'+email+'" class="emailCheck">'+email;
+emailList.appendChild(label);
+}
+});
 }
 function changeMonth(dir){
 cM+=dir;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}
@@ -285,6 +312,8 @@ var visible=mD[s].filter(function(ev){
 var isSpecial=(ev.inspection_types||[]).join('').toLowerCase().indexOf('special')>=0;
 return ev.project===PROJ||!isSpecial;
 });
+var hasOwn=visible.some(function(ev){return ev.project===PROJ;});
+var hasOther=visible.some(function(ev){return ev.project!==PROJ;});
 var total=visible.length;
 if(total>0){
 c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;text-align:center;margin-top:3px;font-weight:700;">'+total+'</div>';
@@ -435,41 +464,104 @@ var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)
 fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){
-if(!r.ok){renderCal();return Promise.reject('Database error');}
+if(!r.ok){
+console.log('Database request failed, showing empty calendar');
+mD={};allEvents=[];
+renderCal();
+return Promise.reject('Database error');
+}
 return r.json();
 }).then(function(data){
-if(!data || !Array.isArray(data)){renderCal();return;}
+if(!data || !Array.isArray(data)){
+console.log('Invalid data received, showing empty calendar');
+mD={};allEvents=[];
+renderCal();
+return;
+}
 mD={};allEvents=data;
 data.forEach(function(v){if(!mD[v.inspection_date])mD[v.inspection_date]=[];mD[v.inspection_date].push(v);});
 renderCal();
-}).catch(function(){renderCal();});
-} catch(error) {renderCal();}
+}).catch(function(error){
+console.log('Calendar loading error:', error);
+mD={};allEvents=[];
+renderCal();
+});
+} catch(error) {
+console.log('Calendar initialization error:', error);
+mD={};allEvents=[];
+renderCal();
 }
+}
+var photoFiles = [];
 function showPhoto(input){
-if(input.files&&input.files[0]){
-var maxSize = input.files[0].type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
-if(input.files[0].size > maxSize){
-var fileType = input.files[0].type === 'application/pdf' ? 'PDF' : 'photo';
-var maxSizeMB = input.files[0].type === 'application/pdf' ? '25MB' : '10MB';
-alert('File size too large. ' + fileType + ' must be under ' + maxSizeMB + '.');
+if(input.files && input.files.length > 0){
+if(input.files.length > 3){
+alert('Maximum 3 files allowed. Please select up to 3 photos or PDFs.');
 input.value = '';
 return;
 }
-photoFile=input.files[0];
-document.getElementById('photoPrompt').style.display='none';
-document.getElementById('photoBox').classList.add('has-file');
-if(photoFile.type==='application/pdf'){
-document.getElementById('photoPreview').style.display='none';
-document.getElementById('pdfLabel').style.display='block';
-document.getElementById('pdfLabel').innerHTML='&#128196; '+photoFile.name;
-}else{
-document.getElementById('pdfLabel').style.display='none';
-var r=new FileReader();r.onload=function(e){document.getElementById('photoPreview').src=e.target.result;document.getElementById('photoPreview').style.display='block';};r.readAsDataURL(input.files[0]);
+var totalSize = 0;
+var validFiles = [];
+for(var i = 0; i < input.files.length; i++){
+var file = input.files[i];
+var maxSize = file.type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+if(file.size > maxSize){
+var fileType = file.type === 'application/pdf' ? 'PDF' : 'photo';
+var maxSizeMB = file.type === 'application/pdf' ? '25MB' : '10MB';
+alert(file.name + ' is too large. ' + fileType + ' must be under ' + maxSizeMB + '.');
+input.value = '';
+return;
+}
+if(!file.type.startsWith('image/') && file.type !== 'application/pdf'){
+alert(file.name + ' is not supported. Please upload photos (JPG, PNG) or PDF files only.');
+input.value = '';
+return;
+}
+validFiles.push(file);
+totalSize += file.size;
+}
+if(totalSize > 50 * 1024 * 1024){
+alert('Total file size too large. All files combined must be under 50MB.');
+input.value = '';
+return;
+}
+photoFiles = validFiles;
+displayFilesList();
 }
 }
+function displayFilesList(){
+var prompt = document.getElementById('photoPrompt');
+var filesList = document.getElementById('filesList');
+var photoBox = document.getElementById('photoBox');
+if(photoFiles.length === 0){
+prompt.style.display = 'block';
+filesList.style.display = 'none';
+photoBox.classList.remove('has-file');
+return;
+}
+prompt.style.display = 'none';
+filesList.style.display = 'block';
+photoBox.classList.add('has-file');
+var html = '';
+for(var i = 0; i < photoFiles.length; i++){
+var file = photoFiles[i];
+var isImage = file.type.startsWith('image/');
+var icon = isImage ? '🖼️' : '📄';
+var sizeKB = Math.round(file.size / 1024);
+html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px;margin:4px 0;background:#333;border-radius:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">'+icon+'</span><div><div style="font-size:13px;font-weight:600;color:#fff;">'+file.name+'</div><div style="font-size:11px;color:#888;">'+sizeKB+'KB</div></div></div><button onclick="removeFile('+i+')" style="background:#c44;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;">Remove</button></div>';
+}
+filesList.innerHTML = html;
+}
+function removeFile(index){
+photoFiles.splice(index, 1);
+displayFilesList();
+document.getElementById('photoIn').value = '';
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
+function toggleOtherName(){
+// No longer needed - remove this function
+}
 function loadSavedEmails(){
 var savedEmails = localStorage.getItem('savedInspectionEmails');
 if(savedEmails){
@@ -491,9 +583,13 @@ var savedPeople = JSON.parse(localStorage.getItem('savedInspectorPeople') || '[]
 var nameSelect = document.getElementById('iName');
 var emailList = document.querySelector('.email-list');
 savedPeople.forEach(function(person){
+// Add to dropdown if not exists
 var exists = false;
 for(var i = 0; i < nameSelect.options.length; i++){
-if(nameSelect.options[i].value === person.name){exists = true;break;}
+if(nameSelect.options[i].value === person.name){
+exists = true;
+break;
+}
 }
 if(!exists){
 var option = document.createElement('option');
@@ -501,6 +597,7 @@ option.value = person.name;
 option.textContent = person.display;
 nameSelect.appendChild(option);
 }
+// Add to email list if not exists
 var emailExists = emailList.querySelector('input[value="'+person.email+'"]');
 if(!emailExists){
 var label = document.createElement('label');
@@ -519,6 +616,7 @@ if(shouldSave && name && email){
 var display = company ? name + ' ' + company : name;
 var person = {name: name, email: email, display: display};
 var savedPeople = JSON.parse(localStorage.getItem('savedInspectorPeople') || '[]');
+// Check if already exists
 var exists = savedPeople.some(function(p){ return p.email === email || p.name === name; });
 if(!exists){
 savedPeople.push(person);
@@ -529,40 +627,56 @@ loadSavedPeople();
 }
 function submitIR(){
 var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim(),identifier=document.getElementById('iIdentifier').value.trim();
+// Handle new person fields
 var newName = document.getElementById('iNewName').value.trim();
 var newEmail = document.getElementById('iNewEmail').value.trim();
-if(!nm && newName){nm = newName;saveNewPersonForFuture();}
-if(!nm){alert('Please select your name or add it below.');return;}
+if(!nm && newName){
+nm = newName;
+saveNewPersonForFuture();
+}
+if(!nm){alert('Please select your name or enter it in the "Add Person" section.');return;}
 var isFlexible=(t==='flexible');
 if(isFlexible)t='07:00';
-if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Missing required fields.');return;}
+if(photoFiles.length === 0||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+
 var specType=document.getElementById('specialType').value;
-if(inspType==='Special'&&!specType){alert('Select Special Inspection Type.');return;}
+if(inspType==='Special'&&!specType){alert('Please select a Special Inspection Type.');return;}
 var emails=[];
+// Collect checked team members
 document.querySelectorAll('.emailCheck:checked').forEach(function(cb){emails.push(cb.value);});
+// Add additional emails if provided
 var additionalText = document.getElementById('additionalEmailsList').value.trim();
 if(additionalText){
 var additionalEmails = additionalText.split(',').map(function(e){return e.trim();}).filter(function(e){return e;});
 emails = emails.concat(additionalEmails);
-saveEmailsForFuture();
+saveEmailsForFuture(); // Save emails if checkbox is checked
 }
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
-fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','CSUSM');fd.append('gc','CW Driver');
+// Append all files
+for(var i = 0; i < photoFiles.length; i++){
+fd.append('files', photoFiles[i]);
+}
+fd.append('mode','photo');fd.append('project','CSUSM');fd.append('gc','CW Driver');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
 if(isFlexible)fd.append('flexible','true');
 if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
+fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
-if(identifier)fd.append('inspection_identifier',identifier);
-if(emails.length>0)fd.append('email_recipients',JSON.stringify(emails));
+if(identifier){fd.append('inspection_identifier',identifier);}
+if(emails.length>0){fd.append('email_recipients',JSON.stringify(emails));}
 fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd
 }).then(function(r){return r.json();}).then(function(data){
 if(data.success){
 document.getElementById('requestView').style.display='none';document.getElementById('successView').style.display='block';
 document.getElementById('tabBar').style.display='none';document.getElementById('calendarView').style.display='none';
-if(emails.length>0){document.getElementById('emailNote').textContent='Copy emailed to '+emails.length+' recipients.';document.getElementById('emailNote').style.display='block';}
-}else{alert('Error: '+(data.error||'Unknown'));btn.textContent='Submit Inspection Request';btn.disabled=false;}
+if(emails.length>0){document.getElementById('emailNote').textContent='Copy emailed to '+emails.length+' recipient'+(emails.length>1?'s':'')+'.';document.getElementById('emailNote').style.display='block';}
+}else if(data.conflict_project){
+var msg='That time is already booked.\n\n';
+if(data.day_schedule&&data.day_schedule.length>0){data.day_schedule.forEach(function(s){msg+=fmt(s.inspection_time.substring(0,5))+' — '+s.project+' ('+(s.inspection_types||[]).join(', ')+')\n';});}
+msg+='\nPlease pick a different time.';alert(msg);btn.textContent='Submit Inspection Request';btn.disabled=false;
+}else{alert('Error: '+(data.error||'Unknown error'));btn.textContent='Submit Inspection Request';btn.disabled=false;}
 }).catch(function(){alert('Connection error.');btn.textContent='Submit Inspection Request';btn.disabled=false;});
 }
 function resetForm(){
@@ -577,7 +691,8 @@ document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;}
 document.getElementById('additionalEmailsList').value='';document.getElementById('saveEmailsCheck').checked=false;
 document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iIdentifier').value='';
 document.getElementById('iNewName').value='';document.getElementById('iNewEmail').value='';document.getElementById('iNewCompany').value='';document.getElementById('saveNewPersonCheck').checked=false;
-inspType='';inspDur='';photoFile=null;loadMD();
+document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFiles=[];loadMD();
+displayFilesList();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 function showCalendarSubscribe(){
@@ -585,16 +700,30 @@ var modal = document.createElement('div');
 modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
 modal.innerHTML = `
 <div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
-<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to CSUSM Calendar</h2></div>
+<div style="background:#5a8fc0;padding:20px;text-align:center;">
+<h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to CSUSM Calendar</h2>
+</div>
 <div style="padding:30px;text-align:center;">
-<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Add to iPhone for automatic updates:</p>
+<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Add this calendar to your iPhone to get automatic updates when new inspections are scheduled:</p>
 <div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
 <div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">COPY THIS URL:</div>
-<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM</div>
+<div style="color:#fff;font-size:0.9rem;word-break:break-all;line-height:1.3;" onclick="copyCalendarURL()" style="cursor:pointer;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM</div>
 <div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy</div>
 </div>
-<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Got It</button>
-</div></div>`;
+<div style="text-align:left;color:#ccc;font-size:1rem;line-height:1.4;">
+<div style="color:#e8742a;font-weight:600;margin-bottom:10px;">iPhone Steps:</div>
+<div style="margin-bottom:8px;">1. Settings → Calendar → Accounts</div>
+<div style="margin-bottom:8px;">2. "Add Account" → "Other"</div>
+<div style="margin-bottom:8px;">3. "Add Subscribed Calendar"</div>
+<div style="margin-bottom:8px;">4. Paste the URL above</div>
+<div style="margin-bottom:15px;">5. Done!</div>
+<div style="color:#888;font-size:0.9rem;font-style:italic;">Calendar will auto-update with CSUSM inspections only.</div>
+</div>
+<div style="text-align:center;margin-top:25px;">
+<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:1rem;">Got It</button>
+</div>
+</div>
+</div>`;
 document.body.appendChild(modal);
 window.currentCalendarModal = modal;
 }
@@ -604,9 +733,29 @@ navigator.clipboard.writeText(url).then(function() {
 var btn = document.getElementById('copyBtn');
 btn.style.color = '#4CAF50';
 btn.innerHTML = '✅ Copied!';
+setTimeout(function() {
+btn.style.color = '#e8742a';
+btn.innerHTML = '📋 Tap to Copy';
+}, 2000);
+}).catch(function() {
+var btn = document.getElementById('copyBtn');
+btn.style.color = '#f44336';
+btn.innerHTML = '❌ Copy failed';
+setTimeout(function() {
+btn.style.color = '#e8742a';
+btn.innerHTML = '📋 Tap to Copy';
+}, 2000);
 });
 }
-function closeCalendarModal() { if(window.currentCalendarModal) {window.currentCalendarModal.remove(); window.currentCalendarModal = null;}}
+function closeCalendarModal() {
+if(window.currentCalendarModal) {
+window.currentCalendarModal.remove();
+window.currentCalendarModal = null;
+}
+}
+function copyToClipboard(text) {
+copyCalendarURL();
+}
 loadMD();
 loadSavedEmails();
 loadSavedPeople();
