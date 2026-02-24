@@ -153,4 +153,142 @@ details[open] .collapsible-summary::after { content: '−'; }
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
-<label class="email-row"><input type="checkbox" value="khaider@cwdriver
+<label class="email-row"><input type="checkbox" value="khaider@cwdriver.com" class="emailCheck">Kyle Haider</label>
+</div>
+
+<details class="collapsible-section">
+    <summary class="collapsible-summary">Additional Email Recipients</summary>
+    <div style="padding-bottom:10px;">
+        <input type="text" id="additionalEmailsList" class="field-input" placeholder="Emails separated by commas">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ccc;cursor:pointer;">
+            <input type="checkbox" id="saveEmailsCheck"> Save these emails
+        </label>
+    </div>
+</details>
+
+<details class="collapsible-section">
+    <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
+    <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
+        <label class="field-label">Full Name</label>
+        <input type="text" id="iNewName" class="field-input">
+        <label class="field-label">Email Address</label>
+        <input type="email" id="iNewEmail" class="field-input">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ccc;cursor:pointer;">
+            <input type="checkbox" id="saveNewPersonCheck"> Save for future use
+        </label>
+    </div>
+</details>
+
+<button onclick="submitIR()" id="submitBtn" class="submit-btn" style="margin-top:20px;">Submit Inspection Request</button>
+</div>
+
+<div class="success-view" id="successView">
+<div style="font-size:48px;">&#9989;</div>
+<h2>Request Submitted</h2>
+<button onclick="resetForm()" class="reset-btn">Submit Another</button>
+</div>
+
+<script>
+var SB='https://esxeusjjeuyhwwrtwpcv.supabase.co';
+var PROJ='CSUSM';
+var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzeGV1c2pqZXV5aHd3cnR3cGN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Mzg0MDYsImV4cCI6MjA4NjMxNDQwNn0.dBEhvcxnscwk1gmb3FGYexmLlrzbd60NFzkt4771IvE';
+var allFiles = []; 
+var inspType='',inspDur='';
+var cM=new Date().getMonth(),cY=new Date().getFullYear();
+var mD={};
+
+function handleFileSelection(input) {
+    const files = Array.from(input.files);
+    files.forEach(file => {
+        if(file.size > (file.type === 'application/pdf' ? 25*1024*1024 : 10*1024*1024)){
+            alert(file.name + " is too large."); return;
+        }
+        allFiles.push(file);
+    });
+    renderFileGrid();
+    input.value = ''; 
+}
+
+function removeFile(index) { allFiles.splice(index, 1); renderFileGrid(); }
+
+function renderFileGrid() {
+    const grid = document.getElementById('filePreviewGrid');
+    grid.innerHTML = '';
+    allFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        if(file.type === 'application/pdf') {
+            item.innerHTML = `<div class="pdf-indicator">PDF<br>${file.name.substring(0,8)}...</div>`;
+        } else {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file); item.appendChild(img);
+        }
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn'; removeBtn.innerHTML = '&times;';
+        removeBtn.onclick = () => removeFile(index);
+        item.appendChild(removeBtn); grid.appendChild(item);
+    });
+}
+
+function showCalendarSubscribe(){
+var modal = document.createElement('div');
+modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+modal.innerHTML = `
+<div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
+<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to CSUSM Calendar</h2></div>
+<div style="padding:30px;text-align:center;">
+<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Add this calendar to your iPhone to get automatic updates:</p>
+<div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
+<div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">COPY THIS URL:</div>
+<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM</div>
+<div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy</div>
+</div>
+<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Got It</button>
+</div></div>`;
+document.body.appendChild(modal); window.currentCalendarModal = modal;
+}
+
+function copyCalendarURL() {
+var url = 'https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM';
+navigator.clipboard.writeText(url).then(function() {
+var btn = document.getElementById('copyBtn'); btn.style.color = '#4CAF50'; btn.innerHTML = '✅ Copied!';
+});
+}
+
+function closeCalendarModal() { if(window.currentCalendarModal) {window.currentCalendarModal.remove(); window.currentCalendarModal = null;}}
+function switchTab(t){
+document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
+document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
+document.getElementById('calendarView').style.display=t==='calendar'?'block':'none';
+document.getElementById('requestView').style.display=t==='request'?'block':'none';
+}
+function changeMonth(dir){ cM+=dir; if(cM>11){cM=0;cY++;} if(cM<0){cM=11;cY--;} loadMD(); }
+function pad(n){return String(n).padStart(2,'0');}
+function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
+function loadMD(){
+var s=cY+'-'+pad(cM+1)+'-01', ed=new Date(cY,cM+1,0).getDate(), e=cY+'-'+pad(cM+1)+'-'+pad(ed);
+document.getElementById('monthLabel').textContent=['January','February','March','April','May','June','July','August','September','October','November','December'][cM]+' '+cY;
+fetch(SB+'/rest/v1/inspection_requests?inspection_date=gte.'+s+'&inspection_date=lte.'+e,{headers:{'apikey':AK,'Authorization':'Bearer '+AK}})
+.then(r=>r.json()).then(data=>{
+mD={}; data.forEach(v=>{if(!mD[v.inspection_date])mD[v.inspection_date]=[]; mD[v.inspection_date].push(v);});
+renderCal();
+});
+}
+function renderCal(){
+var g=document.getElementById('calGrid'); g.innerHTML='';
+var sd=new Date(cY,cM,1).getDay(), ld=new Date(cY,cM+1,0).getDate();
+for(var i=0;i<sd;i++) g.appendChild(document.createElement('div')).className='day-cell other-month';
+for(var d=1;d<=ld;d++){
+var s=ds(cY,cM,d), c=document.createElement('div');
+c.className='day-cell'; c.innerHTML='<span class="day-num">'+d+'</span>';
+if(mD[s]) c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;font-weight:700;">'+mD[s].length+'</div>';
+g.appendChild(c);
+}
+}
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
+function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+function resetForm(){ location.reload(); }
+loadMD();
+</script>
+</body>
+</html>
