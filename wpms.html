@@ -122,11 +122,10 @@ select.field-input{background:#222;color:#fff;}
 <div id="requestView" class="form-wrap">
 <label class="field-label">Photo or PDF of Inspection Request *</label>
 <div class="photo-box" id="photoBox" onclick="document.getElementById('photoIn').click()">
-<div id="photoPrompt">&#128247; Tap to take photo, upload image, or select PDF</div>
-<img id="photoPreview" style="display:none;max-width:100%;max-height:250px;border-radius:4px;">
-<div id="pdfLabel" style="display:none;font-size:15px;color:#2d7a3a;font-weight:bold;padding:10px;"></div>
+<div id="photoPrompt">&#128247; Upload photos and PDFs (up to 3 files)</div>
+<div id="filesList" style="display:none;"></div>
 </div>
-<input type="file" id="photoIn" onchange="showPhoto(this)" style="display:none;">
+<input type="file" id="photoIn" onchange="showPhoto(this)" style="display:none;" multiple accept="image/*,.pdf">
 <label class="field-label">Inspection Date *</label>
 <input type="date" id="iDate" class="field-input">
 <label class="field-label">Inspection Time *</label>
@@ -491,29 +490,70 @@ mD={};allEvents=[];
 renderCal();
 }
 }
+var photoFiles = [];
 function showPhoto(input){
-if(input.files&&input.files[0]){
-// Check file size first (10MB limit for photos, 25MB for PDFs)
-var maxSize = input.files[0].type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
-if(input.files[0].size > maxSize){
-var fileType = input.files[0].type === 'application/pdf' ? 'PDF' : 'photo';
-var maxSizeMB = input.files[0].type === 'application/pdf' ? '25MB' : '10MB';
-alert('File size too large. ' + fileType + ' must be under ' + maxSizeMB + '. Please compress or resize the file.');
+if(input.files && input.files.length > 0){
+if(input.files.length > 3){
+alert('Maximum 3 files allowed. Please select up to 3 photos or PDFs.');
 input.value = '';
 return;
 }
-photoFile=input.files[0];
-document.getElementById('photoPrompt').style.display='none';
-document.getElementById('photoBox').classList.add('has-file');
-if(photoFile.type==='application/pdf'){
-document.getElementById('photoPreview').style.display='none';
-document.getElementById('pdfLabel').style.display='block';
-document.getElementById('pdfLabel').innerHTML='&#128196; '+photoFile.name;
-}else{
-document.getElementById('pdfLabel').style.display='none';
-var r=new FileReader();r.onload=function(e){document.getElementById('photoPreview').src=e.target.result;document.getElementById('photoPreview').style.display='block';};r.readAsDataURL(input.files[0]);
+var totalSize = 0;
+var validFiles = [];
+for(var i = 0; i < input.files.length; i++){
+var file = input.files[i];
+var maxSize = file.type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+if(file.size > maxSize){
+var fileType = file.type === 'application/pdf' ? 'PDF' : 'photo';
+var maxSizeMB = file.type === 'application/pdf' ? '25MB' : '10MB';
+alert(file.name + ' is too large. ' + fileType + ' must be under ' + maxSizeMB + '.');
+input.value = '';
+return;
+}
+if(!file.type.startsWith('image/') && file.type !== 'application/pdf'){
+alert(file.name + ' is not supported. Please upload photos (JPG, PNG) or PDF files only.');
+input.value = '';
+return;
+}
+validFiles.push(file);
+totalSize += file.size;
+}
+if(totalSize > 50 * 1024 * 1024){
+alert('Total file size too large. All files combined must be under 50MB.');
+input.value = '';
+return;
+}
+photoFiles = validFiles;
+displayFilesList();
 }
 }
+function displayFilesList(){
+var prompt = document.getElementById('photoPrompt');
+var filesList = document.getElementById('filesList');
+var photoBox = document.getElementById('photoBox');
+if(photoFiles.length === 0){
+prompt.style.display = 'block';
+filesList.style.display = 'none';
+photoBox.classList.remove('has-file');
+return;
+}
+prompt.style.display = 'none';
+filesList.style.display = 'block';
+photoBox.classList.add('has-file');
+var html = '';
+for(var i = 0; i < photoFiles.length; i++){
+var file = photoFiles[i];
+var isImage = file.type.startsWith('image/');
+var icon = isImage ? '🖼️' : '📄';
+var sizeKB = Math.round(file.size / 1024);
+html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px;margin:4px 0;background:#333;border-radius:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">'+icon+'</span><div><div style="font-size:13px;font-weight:600;color:#fff;">'+file.name+'</div><div style="font-size:11px;color:#888;">'+sizeKB+'KB</div></div></div><button onclick="removeFile('+i+')" style="background:#c44;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;">Remove</button></div>';
+}
+filesList.innerHTML = html;
+}
+function removeFile(index){
+photoFiles.splice(index, 1);
+displayFilesList();
+document.getElementById('photoIn').value = '';
 }
 function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});event.target.classList.add('active');}
@@ -595,7 +635,7 @@ saveNewPersonForFuture();
 if(!nm){alert('Please select your name or enter it in the "Add Person" section.');return;}
 var isFlexible=(t==='flexible');
 if(isFlexible)t='07:00';
-if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+if(photoFiles.length === 0||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
 
 // Double-check file size before submission
 var maxSize = photoFile.type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
@@ -620,7 +660,10 @@ saveEmailsForFuture(); // Save emails if checkbox is checked
 }
 var btn=document.getElementById('submitBtn');btn.textContent='Submitting...';btn.disabled=true;
 var fd=new FormData();
-fd.append('photo',photoFile);fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
+for(var i = 0; i < photoFiles.length; i++){
+fd.append('files', photoFiles[i]);
+}
+fd.append('mode','photo');fd.append('project','WPMS');fd.append('gc','Lusardi');
 fd.append('inspection_date',d);fd.append('inspection_time',t);fd.append('inspection_types',JSON.stringify([inspType]));fd.append('duration',inspDur);
 if(isFlexible)fd.append('flexible','true');
 if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
@@ -654,7 +697,8 @@ document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;}
 document.getElementById('additionalEmailsList').value='';document.getElementById('saveEmailsCheck').checked=false;
 document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iIdentifier').value='';
 document.getElementById('iNewName').value='';document.getElementById('iNewEmail').value='';document.getElementById('iNewCompany').value='';document.getElementById('saveNewPersonCheck').checked=false;
-document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFile=null;loadMD();
+document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFiles=[];loadMD();
+displayFilesList();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
 function showCalendarSubscribe(){
