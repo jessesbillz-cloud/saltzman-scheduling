@@ -30,9 +30,10 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
+select.field-input{background:#222;color:#fff;}
 
 /* MULTI-FILE SYSTEM */
-.photo-box{border:2px dashed #444;border-radius:8px;padding:20px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
+.photo-box{border:2px dashed #444;border-radius:8px;padding:25px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
 .file-list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .file-item { position: relative; aspect-ratio: 1/1; background: #222; border: 1px solid #333; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .file-item img { width: 100%; height: 100%; object-fit: cover; }
@@ -45,6 +46,8 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .dur-btns{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .dur-btn{padding:10px 0;font-size:13px;font-weight:600;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;flex:1;min-width:55px;}
 .dur-btn.active{background:#e8742a;color:#fff;border-color:#5a8fc0;}
+.special-sub{display:none;margin-bottom:14px;}
+.special-sub.show{display:block;}
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
 .email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
 
@@ -104,38 +107,64 @@ details[open] .collapsible-summary::after { content: '−'; }
     <div id="photoPrompt">&#128247; Tap to select multiple photos or PDFs</div>
 </div>
 <input type="file" id="photoIn" onchange="handleFileSelection(this)" multiple style="display:none;">
+
 <div id="filePreviewGrid" class="file-list-container"></div>
 
 <label class="field-label">Inspection Date *</label>
 <input type="date" id="iDate" class="field-input">
+
 <label class="field-label">Inspection Time *</label>
 <select id="iTime" class="field-input">
 <option value="">Select time</option>
 <option value="flexible">Flexible — anytime today</option>
-<option value="07:00">7:00 AM</option><option value="09:00">9:00 AM</option>
-<option value="11:00">11:00 AM</option><option value="13:00">1:00 PM</option>
-<option value="15:00">3:00 PM</option>
+<option value="05:00">5:00 AM</option><option value="05:30">5:30 AM</option>
+<option value="06:00">6:00 AM</option><option value="06:30">6:30 AM</option>
+<option value="07:00">7:00 AM</option><option value="07:30">7:30 AM</option>
+<option value="08:00">8:00 AM</option><option value="08:30">8:30 AM</option>
+<option value="09:00">9:00 AM</option><option value="09:30">9:30 AM</option>
+<option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option>
+<option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option>
+<option value="12:00">12:00 PM</option><option value="12:30">12:30 PM</option>
+<option value="13:00">1:00 PM</option><option value="13:30">1:30 PM</option>
+<option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option>
+<option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
+<option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
+<option value="17:00">5:00 PM</option>
 </select>
-<label class="field-label">Inspection Request # or Description (Optional)</label>
-<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2">
+
+<label class="field-label">Inspection Request # or description (Optional)</label>
+<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, SLAB-B2" maxlength="50">
+
 <label class="field-label">Duration *</label>
 <div class="dur-btns" id="durBtns">
 <div class="dur-btn" onclick="setDur('30')">30 min</div>
 <div class="dur-btn" onclick="setDur('60')">1 hr</div>
 <div class="dur-btn" onclick="setDur('120')">2 hr</div>
+<div class="dur-btn" onclick="setDur('240')">4 hr</div>
 <div class="dur-btn" onclick="setDur('480')">All Day</div>
 </div>
+
 <label class="field-label">Inspection Type *</label>
 <div class="type-btns">
 <div class="type-btn" id="btnSpecial" onclick="setType('Special')">Special</div>
 <div class="type-btn" id="btnRegular" onclick="setType('IOR')">IOR</div>
 </div>
+
 <div class="special-sub" id="specialSub">
+<label class="field-label">Special Inspection Type *</label>
 <select class="field-input" id="specialType">
 <option value="">Select type</option>
-<option value="Soils">Soils</option><option value="Concrete">Concrete</option>
+<option value="Soils">Soils</option>
+<option value="Material ID">Material ID</option>
+<option value="Material ID CWI">Material ID CWI</option>
+<option value="Concrete">Concrete</option>
+<option value="Bolting">Bolting</option>
+<option value="Pull Test">Pull Test</option>
+<option value="Shotcrete">Shotcrete</option>
+<option value="Fireproofing">Fireproofing</option>
 </select>
 </div>
+
 <label class="field-label">Submitted By *</label>
 <select id="iName" class="field-input">
 <option value="">Select your name</option>
@@ -146,14 +175,14 @@ details[open] .collapsible-summary::after { content: '−'; }
 </select>
 
 <label class="field-label">Notes</label>
-<textarea id="iNotes" class="field-input" rows="3" placeholder="Notes..."></textarea>
+<textarea id="iNotes" class="field-input" rows="3" placeholder="Optional details"></textarea>
 
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
-<label class="email-row"><input type="checkbox" value="rdavis@lusardi.com" class="emailCheck">Ron Davis</label>
-<label class="email-row"><input type="checkbox" value="sbeltran@lusardi.com" class="emailCheck">Scuyler Beltran</label>
-<label class="email-row"><input type="checkbox" value="amartinez@lusardi.com" class="emailCheck">Alejandro Martinez</label>
+<label class="email-row"><input type="checkbox" value="rdavis@lusardi.com" class="emailCheck">Ron Davis (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="sbeltran@lusardi.com" class="emailCheck">Scuyler Beltran (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="amartinez@lusardi.com" class="emailCheck">Alejandro Martinez (Lusardi)</label>
 </div>
 
 <details class="collapsible-section">
@@ -169,10 +198,13 @@ details[open] .collapsible-summary::after { content: '−'; }
 <details class="collapsible-section">
     <summary class="collapsible-summary">Add a New Person to Dropdown</summary>
     <div style="padding:16px;background:#2a2a2a;border-radius:8px;border-left:4px solid #5a8fc0;">
-        <label class="field-label">Full Name</label>
+        <div style="color:#5a8fc0;font-weight:600;margin-bottom:8px;">Don't see your name? Add it below:</div>
+        <label class="field-label">Your Name</label>
         <input type="text" id="iNewName" class="field-input">
-        <label class="field-label">Email Address</label>
+        <label class="field-label">Your Email</label>
         <input type="email" id="iNewEmail" class="field-input">
+        <label class="field-label">Company/Role</label>
+        <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (Lusardi), (Testing Lab)">
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#ccc;cursor:pointer;">
             <input type="checkbox" id="saveNewPersonCheck"> Save for future use
         </label>
@@ -196,47 +228,6 @@ var allFiles = [];
 var inspType='',inspDur='';
 var cM=new Date().getMonth(),cY=new Date().getFullYear();
 var mD={};
-
-function showCalendarSubscribe(){
-var modal = document.createElement('div');
-modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
-modal.innerHTML = `
-<div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
-<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to WPMS Calendar</h2></div>
-<div style="padding:30px;text-align:center;">
-<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Copy the URL below to sync this jobsite schedule to your phone:</p>
-<div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
-<div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">PROJECT URL:</div>
-<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS</div>
-<div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy URL</div>
-</div>
-
-<details class="collapsible-section" style="text-align:left;">
-    <summary class="collapsible-summary">iPhone Setup Instructions</summary>
-    <div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">
-        1. Settings → Calendar → Accounts<br>
-        2. "Add Account" → "Other"<br>
-        3. "Add Subscribed Calendar"<br>
-        4. Paste the Project URL above<br>
-        5. Done!
-    </div>
-</details>
-
-<details class="collapsible-section" style="text-align:left;">
-    <summary class="collapsible-summary">Android / Google Setup Instructions</summary>
-    <div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">
-        1. Open Google Calendar on a desktop browser.<br>
-        2. Next to "Other calendars," click (+).<br>
-        3. Select "From URL."<br>
-        4. Paste the Project URL above.<br>
-        5. Ensure "Sync" is on in your phone's Calendar App settings.
-    </div>
-</details>
-
-<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-top:20px;">Got It</button>
-</div></div>`;
-document.body.appendChild(modal); window.currentCalendarModal = modal;
-}
 
 function handleFileSelection(input) {
     const files = Array.from(input.files);
@@ -266,6 +257,27 @@ function renderFileGrid() {
         removeBtn.onclick = () => removeFile(index);
         item.appendChild(removeBtn); grid.appendChild(item);
     });
+}
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
+function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+function showCalendarSubscribe(){
+var modal = document.createElement('div');
+modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+modal.innerHTML = `
+<div style="background:#1a1a1a;max-width:500px;width:100%;border-radius:12px;overflow:hidden;border:1px solid #333;">
+<div style="background:#5a8fc0;padding:20px;text-align:center;"><h2 style="color:#fff;margin:0;font-size:1.4rem;">📅 Subscribe to WPMS Calendar</h2></div>
+<div style="padding:30px;text-align:center;">
+<p style="color:#ccc;margin-bottom:25px;font-size:1.1rem;line-height:1.5;">Copy the URL below to sync this jobsite schedule to your phone:</p>
+<div style="background:#222;border:2px solid #5a8fc0;border-radius:8px;padding:15px;margin-bottom:25px;">
+<div style="color:#5a8fc0;font-size:0.9rem;margin-bottom:8px;font-weight:600;">PROJECT URL:</div>
+<div style="color:#fff;font-size:0.9rem;word-break:break-all;">https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS</div>
+<div id="copyBtn" style="color:#e8742a;font-size:0.8rem;margin-top:8px;cursor:pointer;" onclick="copyCalendarURL()">📋 Tap to Copy URL</div>
+</div>
+<details class="collapsible-section" style="text-align:left;"><summary class="collapsible-summary">iPhone Setup Instructions</summary><div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">1. Settings → Calendar → Accounts<br>2. "Add Account" → "Other"<br>3. "Add Subscribed Calendar"<br>4. Paste the Project URL above<br>5. Done!</div></details>
+<details class="collapsible-section" style="text-align:left;"><summary class="collapsible-summary">Android / Google Setup Instructions</summary><div style="padding:10px;font-size:14px;color:#ccc;line-height:1.5;">1. Open Google Calendar on a desktop browser.<br>2. Next to "Other calendars," click (+).<br>3. Select "From URL."<br>4. Paste the Project URL above.<br>5. Ensure "Sync" is on in your phone's Calendar App settings.</div></details>
+<button onclick="closeCalendarModal()" style="background:#e8742a;color:#fff;padding:12px 30px;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-top:20px;">Got It</button>
+</div></div>`;
+document.body.appendChild(modal); window.currentCalendarModal = modal;
 }
 function copyCalendarURL() {
 var url = 'https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=WPMS';
@@ -303,8 +315,6 @@ if(mD[s]) c.innerHTML+='<div style="font-size:12px;color:#5a8fc0;font-weight:700
 g.appendChild(c);
 }
 }
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
-function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
 function resetForm(){ location.reload(); }
 function submitIR(){
     var d=document.getElementById('iDate').value, t=document.getElementById('iTime').value, nm=document.getElementById('iName').value;
@@ -312,7 +322,8 @@ function submitIR(){
     var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
     var fd=new FormData();
     allFiles.forEach((file, index) => fd.append('file_' + index, file));
-    fd.append('project', PROJ); fd.append('inspection_date', d); fd.append('inspection_time', t);
+    fd.append('project', PROJ); fd.append('gc', 'Lusardi');
+    fd.append('inspection_date', d); fd.append('inspection_time', t);
     fd.append('inspection_types', JSON.stringify([inspType])); fd.append('duration', inspDur);
     fd.append('submitted_by', nm); fd.append('notes', document.getElementById('iNotes').value);
     var identifier = document.getElementById('iIdentifier').value.trim();
