@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CSUSM Inspection Request</title>
 <style>
+/* (Identical styles to WPMS version for professional consistency) */
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:12px;background:#111;}
-.header{margin-bottom:12px;}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.header img{width:45px;height:45px;border-radius:6px;}
 .header h2{font-size:18px;margin-bottom:2px;color:#fff;}
 .header p{color:#888;font-size:13px;}
 .tabs{display:flex;border-bottom:2px solid #333;margin-bottom:0;}
@@ -15,39 +17,32 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .tab.active{color:#e8742a;border-bottom-color:#e8742a;}
 .card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .card-top{border-radius:8px 8px 0 0;border-top:none;}
-
-/* CALENDAR & DAY DETAIL */
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
 .cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#5a8fc0;}
 .cal-nav strong{font-size:15px;color:#5a8fc0;}
 .week-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;}
 .week-header{font-size:11px;color:#666;padding:6px 0;font-weight:600;}
 .day-cell{padding:8px 4px;font-size:13px;cursor:pointer;min-height:40px;color:#ccc;}
+.day-cell:hover{background:#222;}
 .day-cell.selected{background:#1e2a3a;border-radius:6px;}
 .day-cell.today .day-num{background:#5a8fc0;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;}
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:16px;font-weight:bold;color:#5a8fc0;margin-bottom:12px;}
 .evt-row{padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #5a8fc0;font-size:13px;color:#fff;}
-
-/* EVENT ACTIONS (EDIT/CANCEL) */
 .evt-actions { display: flex; gap: 8px; margin-top: 8px; }
-.btn-edit, .btn-cancel { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; background: transparent; text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-edit, .btn-cancel { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; background: transparent; text-transform: uppercase; }
 .btn-edit { color: #e8742a; border: 1px solid #e8742a; }
 .btn-cancel { color: #c44; border: 1px solid #c44; }
-
-/* FORM ELEMENTS */
-.form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
-.field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
-.field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
-
-/* MULTI-FILE SYSTEM */
 .photo-box{border:2px dashed #444;border-radius:8px;padding:20px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
 .file-list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .file-item { position: relative; aspect-ratio: 1/1; background: #222; border: 1px solid #333; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .file-item img { width: 100%; height: 100%; object-fit: cover; }
 .file-item .pdf-indicator { text-align: center; color: #5a8fc0; font-size: 10px; font-weight: bold; padding: 4px; }
 .file-item .remove-btn { position: absolute; top: 0; right: 0; background: #e8742a; color: #fff; border: none; width: 22px; height: 22px; font-size: 16px; font-weight: bold; cursor: pointer; border-bottom-left-radius: 6px; line-height: 1; }
-
+.form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
+.field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
+.field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
+select.field-input{background:#222;color:#fff;}
 .type-btns{display:flex;gap:8px;margin-bottom:14px;}
 .type-btn{flex:1;padding:12px;font-size:14px;font-weight:bold;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;}
 .type-btn.active{background:#e8742a;color:#fff;border-color:#5a8fc0;}
@@ -58,30 +53,31 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .special-sub.show{display:block;}
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
 .email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
-
-/* COLLAPSIBLE LINKS */
 .collapsible-section { border-top: 1px solid #333; margin-top: 10px; padding: 5px 0; }
 .collapsible-summary { padding: 10px 0; font-size: 13px; color: #5a8fc0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
 .collapsible-summary::-webkit-details-marker { display: none; }
 .collapsible-summary::after { content: '+'; font-size: 16px; font-weight: bold; }
 details[open] .collapsible-summary::after { content: '−'; }
-
 .submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;margin-top:20px;}
 .success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
-.reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#5a8fc0;background:none;border:2px solid #5a8fc0;border-radius:8px;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="header">
-<h2>Inspection Request</h2>
-<p>CSU San Marcos IS&E — CW Driver</p>
+    <img src="image0-5.jpeg" alt="Logo">
+    <div>
+        <h2>Inspection Request</h2>
+        <p>CSU San Marcos IS&E — CW Driver</p>
+    </div>
 </div>
+
 <div class="tabs" id="tabBar">
 <div class="tab active" onclick="switchTab('calendar')">Calendar</div>
 <div class="tab" onclick="switchTab('request')">New Request</div>
 </div>
+
 <div id="calendarView">
-<div class="card card-top" style="border-top:none;border-radius:0;">
+<div class="card card-top" style="border-radius:0;">
 <div class="cal-nav">
 <button onclick="changeMonth(-1)">&larr;</button>
 <strong id="monthLabel"></strong>
@@ -173,10 +169,10 @@ details[open] .collapsible-summary::after { content: '−'; }
 <select id="iName" class="field-input">
 <option value="">Select your name</option>
 <option value="other">-- Add name below --</option>
-<option value="Kyle Haider">Kyle Haider (CW Driver)</option>
-<option value="Mike McConkey">Mike McConkey (CW Driver)</option>
-<option value="Brayden Duzan">Brayden Duzan (CW Driver)</option>
-<option value="Matt Lulling">Matt Lulling (OCMI)</option>
+<option value="Kyle Haider">Kyle Haider</option>
+<option value="Mike McConkey">Mike McConkey</option>
+<option value="Brayden Duzan">Brayden Duzan</option>
+<option value="Matt Lulling">Matt Lulling</option>
 </select>
 
 <label class="field-label">Notes</label>
@@ -220,10 +216,10 @@ details[open] .collapsible-summary::after { content: '−'; }
 <button onclick="submitIR()" id="submitBtn" class="submit-btn">Submit Inspection Request</button>
 </div>
 
-<div class="success-view" id="successView">
+<div class="success-view" id="successView" style="display:none; text-align:center; padding:60px 20px; color:#fff;">
 <div style="font-size:48px;">&#9989;</div>
 <h2>Request Submitted</h2>
-<button onclick="resetForm()" class="reset-btn">Submit Another</button>
+<button onclick="resetForm()" style="background:none; border:2px solid #5a8fc0; color:#5a8fc0; padding:10px 20px; border-radius:8px; margin-top:20px; cursor:pointer;">Submit Another</button>
 </div>
 
 <script>
@@ -265,7 +261,6 @@ function renderFileGrid() {
 function showDay(d){
     const list = document.getElementById('dayDetailList');
     const header = document.getElementById('dayDetailHeader');
-    const box = document.getElementById('dayDetail');
     header.textContent = "Schedule for " + d;
     const evts = mD[d] || [];
     if(evts.length === 0){
@@ -277,6 +272,7 @@ function showDay(d){
             html += `<div class="evt-row ${isCancelled?'evt-cancelled':''}">
                 <span class="evt-time">${e.flexible_display === 'flexible' ? 'Flexible' : e.inspection_time.substring(0,5)}</span>
                  — <span class="evt-type">${(e.inspection_types || []).join(', ')}</span>
+                ${e.inspection_identifier ? `<div style="color:#e8742a; font-weight:700; font-size:13px; margin:4px 0;">${e.inspection_identifier}</div>` : ''}
                 <div style="font-size:11px;color:#888;margin-top:4px;">By: ${e.submitted_by}</div>
                 ${!isCancelled && e.project===PROJ ? `
                     <div class="evt-actions">
@@ -288,7 +284,7 @@ function showDay(d){
         });
         list.innerHTML = html;
     }
-    box.style.display = 'block';
+    document.getElementById('dayDetail').style.display = 'block';
 }
 
 function showCalendarSubscribe(){
@@ -312,6 +308,7 @@ document.body.appendChild(modal); window.currentCalendarModal = modal;
 
 function copyCalendarURL() { navigator.clipboard.writeText('https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM'); document.getElementById('copyBtn').textContent = '✅ URL Copied!'; }
 function closeCalendarModal() { if(window.currentCalendarModal) {window.currentCalendarModal.remove(); window.currentCalendarModal = null;}}
+
 function switchTab(t){
 document.querySelectorAll('.tab')[0].classList.toggle('active',t==='calendar');
 document.querySelectorAll('.tab')[1].classList.toggle('active',t==='request');
@@ -319,8 +316,7 @@ document.getElementById('calendarView').style.display=t==='calendar'?'block':'no
 document.getElementById('requestView').style.display=t==='request'?'block':'none';
 }
 function changeMonth(dir){ cM+=dir; if(cM>11){cM=0;cY++;} if(cM<0){cM=11;cY--;} loadMD(); }
-function pad(n){return String(n).padStart(2,'0');}
-function ds(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
+function ds(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
 function loadMD(){
     fetch(SB+'/rest/v1/inspection_requests?project=eq.'+PROJ,{headers:{'apikey':AK,'Authorization':'Bearer '+AK}})
     .then(r=>r.json()).then(data=>{
@@ -341,13 +337,23 @@ function renderCal(){
         g.appendChild(c);
     }
 }
-function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');}
+function setType(t){inspType=t;document.getElementById('btnSpecial').classList.toggle('active',t==='Special');document.getElementById('btnRegular').classList.toggle('active',t==='IOR');document.getElementById('specialSub').classList.toggle('show',t==='Special');if(t!=='Special')document.getElementById('specialType').selectedIndex=0;}
 function setDur(d){inspDur=d;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
-function resetForm(){ location.reload(); }
+
+function saveNewPersonForFuture(){
+    var name = document.getElementById('iNewName').value.trim(), email = document.getElementById('iNewEmail').value.trim(), comp = document.getElementById('iNewCompany').value.trim();
+    if(document.getElementById('saveNewPersonCheck').checked && name && email){
+        var saved = JSON.parse(localStorage.getItem('savedInspectorPeople') || '[]');
+        saved.push({name: name, email: email, display: comp ? name+' '+comp : name});
+        localStorage.setItem('savedInspectorPeople', JSON.stringify(saved));
+        location.reload();
+    }
+}
+
 function submitIR(){
     var d=document.getElementById('iDate').value, t=document.getElementById('iTime').value, nm=document.getElementById('iName').value;
     var newName = document.getElementById('iNewName').value.trim();
-    if((!nm || nm === 'other') && newName){ nm = newName; }
+    if((!nm || nm === 'other') && newName){ nm = newName; saveNewPersonForFuture(); }
     if(!nm || allFiles.length === 0 || !d || !t || !inspType || !inspDur){alert('Missing required fields.'); return;}
     var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
     var fd=new FormData();
@@ -356,12 +362,17 @@ function submitIR(){
     fd.append('inspection_date', d); fd.append('inspection_time', t);
     fd.append('inspection_types', JSON.stringify([inspType])); fd.append('duration', inspDur);
     fd.append('submitted_by', nm); fd.append('notes', document.getElementById('iNotes').value);
+    fd.append('subcontractor', ''); // Fixed: Column constraint satisfied
+    fd.append('location_detail', ''); 
+    var idnt = document.getElementById('iIdentifier').value.trim();
+    fd.append('inspection_identifier', idnt);
     fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd})
     .then(r=>r.json()).then(data=>{
         if(data.success){ document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block'; } 
         else { alert('Error: ' + data.error); btn.disabled=false; btn.textContent='Submit Request'; }
     });
 }
+function resetForm(){ location.reload(); }
 loadMD();
 </script>
 </body>
