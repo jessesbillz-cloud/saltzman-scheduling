@@ -192,8 +192,6 @@ Add this name to the dropdown for future use
 </label>
 <label class="field-label">Notes</label>
 <textarea id="iNotes" class="field-input" rows="3" placeholder="Optional — any additional details" style="resize:vertical;"></textarea>
-<label class="field-label">Your Email Address *</label>
-<input type="email" id="iSubmitterEmail" class="field-input" placeholder="Enter your email for confirmation" required>
 <label class="field-label">Send a copy to:</label>
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
@@ -455,7 +453,7 @@ loadMD();
 function loadMD(){
 try {
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display,inspection_identifier&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){
 if(!r.ok){
@@ -566,14 +564,14 @@ loadSavedNames();
 }
 }
 function submitIR(){
-var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim(),identifier=document.getElementById('iIdentifier').value.trim(),submitterEmail=document.getElementById('iSubmitterEmail').value.trim();
+var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim(),identifier=document.getElementById('iIdentifier').value.trim();
 if(nm==='__other__'){
 nm=document.getElementById('iNameOther').value.trim();
 saveNameForFuture(); // Save name if checkbox is checked
 }
 var isFlexible=(t==='flexible');
 if(isFlexible)t='07:00';
-if(!photoFile||!d||!t||!inspType||!nm||!inspDur||!submitterEmail){alert('Please fill in all required fields and upload a photo/PDF.');return;}
+if(!photoFile||!d||!t||!inspType||!nm||!inspDur){alert('Please fill in all required fields and upload a photo/PDF.');return;}
 
 // Double-check file size before submission
 var maxSize = photoFile.type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
@@ -604,7 +602,7 @@ if(isFlexible)fd.append('flexible','true');
 if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
-fd.append('submitted_by',nm);fd.append('notes',nt);fd.append('submitter_email',submitterEmail);
+fd.append('submitted_by',nm);fd.append('notes',nt);
 if(identifier){fd.append('inspection_identifier',identifier);}
 if(emails.length>0){fd.append('email_recipients',JSON.stringify(emails));}
 fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd
@@ -630,7 +628,7 @@ document.getElementById('btnSpecial').classList.remove('active');document.getEle
 document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
 document.getElementById('additionalEmailsList').value='';document.getElementById('saveEmailsCheck').checked=false;
-document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iIdentifier').value='';document.getElementById('iSubmitterEmail').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iIdentifier').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';
 document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFile=null;loadMD();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
 }
