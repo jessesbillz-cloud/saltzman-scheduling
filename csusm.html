@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CSUSM Inspection Request</title>
 <style>
-/* (Styles are identical to WPMS for consistent professional layout) */
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:12px;background:#111;}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
@@ -17,6 +16,8 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .tab.active{color:#e8742a;border-bottom-color:#e8742a;}
 .card{background:#1a1a1a;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .card-top{border-radius:8px 8px 0 0;border-top:none;}
+
+/* CALENDAR & DAY DETAIL */
 .cal-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #333;}
 .cal-nav button{background:none;border:none;font-size:18px;cursor:pointer;padding:4px 10px;color:#5a8fc0;}
 .cal-nav strong{font-size:15px;color:#5a8fc0;}
@@ -28,20 +29,27 @@ body{font-family:-apple-system,sans-serif;max-width:500px;margin:0 auto;padding:
 .day-detail{padding:12px 14px;border-top:1px solid #333;display:none;}
 .day-detail-header{font-size:16px;font-weight:bold;color:#5a8fc0;margin-bottom:12px;}
 .evt-row{padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #5a8fc0;font-size:13px;color:#fff;}
+
+/* EVENT ACTIONS */
 .evt-actions { display: flex; gap: 8px; margin-top: 8px; }
 .btn-edit, .btn-cancel { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; background: transparent; text-transform: uppercase; }
 .btn-edit { color: #e8742a; border: 1px solid #e8742a; }
 .btn-cancel { color: #c44; border: 1px solid #c44; }
+
+/* MULTI-FILE GRID */
 .photo-box{border:2px dashed #444;border-radius:8px;padding:20px 16px;text-align:center;background:#1a1a1a;cursor:pointer;margin-bottom:14px;color:#888;}
 .file-list-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .file-item { position: relative; aspect-ratio: 1/1; background: #222; border: 1px solid #333; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .file-item img { width: 100%; height: 100%; object-fit: cover; }
 .file-item .pdf-indicator { text-align: center; color: #5a8fc0; font-size: 10px; font-weight: bold; padding: 4px; }
 .file-item .remove-btn { position: absolute; top: 0; right: 0; background: #e8742a; color: #fff; border: none; width: 22px; height: 22px; font-size: 16px; font-weight: bold; cursor: pointer; border-bottom-left-radius: 6px; line-height: 1; }
+
+/* FORM ELEMENTS */
 .form-wrap{background:#1a1a1a;border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:16px;display:none;}
 .field-label{display:block;font-weight:bold;font-size:13px;margin-bottom:5px;color:#ccc;}
 .field-input{width:100%;padding:10px;font-size:15px;border:1px solid #444;border-radius:6px;margin-bottom:14px;background:#222;color:#fff;}
 select.field-input{background:#222;color:#fff;}
+
 .type-btns{display:flex;gap:8px;margin-bottom:14px;}
 .type-btn{flex:1;padding:12px;font-size:14px;font-weight:bold;border:2px solid #444;border-radius:8px;background:#222;cursor:pointer;text-align:center;color:#ccc;}
 .type-btn.active{background:#e8742a;color:#fff;border-color:#5a8fc0;}
@@ -52,14 +60,16 @@ select.field-input{background:#222;color:#fff;}
 .special-sub.show{display:block;}
 .email-list{background:#222;border:1px solid #333;border-radius:6px;padding:8px 12px;margin-bottom:16px;}
 .email-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #333;font-size:13px;color:#ccc;}
+
+/* COLLAPSIBLE LINKS */
 .collapsible-section { border-top: 1px solid #333; margin-top: 10px; padding: 5px 0; }
 .collapsible-summary { padding: 10px 0; font-size: 13px; color: #5a8fc0; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
 .collapsible-summary::-webkit-details-marker { display: none; }
 .collapsible-summary::after { content: '+'; font-size: 16px; font-weight: bold; }
 details[open] .collapsible-summary::after { content: '−'; }
+
 .submit-btn{width:100%;padding:14px;font-size:15px;font-weight:bold;color:#fff;background:#e8742a;border:none;border-radius:8px;cursor:pointer;margin-top:20px;}
 .success-view{display:none;text-align:center;padding:60px 20px;color:#fff;}
-.reset-btn{margin-top:16px;padding:10px 20px;font-size:14px;font-weight:bold;color:#5a8fc0;background:none;border:2px solid #5a8fc0;border-radius:8px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -206,7 +216,7 @@ details[open] .collapsible-summary::after { content: '−'; }
         <label class="field-label">Your Email</label>
         <input type="email" id="iNewEmail" class="field-input">
         <label class="field-label">Company/Role</label>
-        <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (CW Driver), (OCMI)">
+        <input type="text" id="iNewCompany" class="field-input" placeholder="e.g., (CW Driver), (Testing Lab)">
         <label style="display:flex;align-items:center;gap:8px;margin-size:13px;color:#ccc;cursor:pointer;">
             <input type="checkbox" id="saveNewPersonCheck"> Save for future use
         </label>
@@ -219,7 +229,7 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div class="success-view" id="successView" style="display:none; text-align:center; padding:60px 20px; color:#fff;">
 <div style="font-size:48px;">&#9989;</div>
 <h2>Request Submitted</h2>
-<button onclick="resetForm()" class="reset-btn">Submit Another</button>
+<button onclick="resetForm()" style="background:none; border:2px solid #5a8fc0; color:#5a8fc0; padding:10px 20px; border-radius:8px; margin-top:20px; cursor:pointer;">Submit Another</button>
 </div>
 
 <script>
@@ -287,6 +297,48 @@ function showDay(d){
     document.getElementById('dayDetail').style.display = 'block';
 }
 
+function showActionModal(title,names,callback){
+var overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;';
+var box=document.createElement('div');
+box.style.cssText='background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:20px;width:280px;';
+var h=document.createElement('div'); h.style.cssText='font-size:14px;font-weight:bold;color:#fff;margin-bottom:12px;'; h.textContent=title; box.appendChild(h);
+names.forEach(function(n){
+var btn=document.createElement('button'); btn.style.cssText='display:block;width:100%;padding:12px;margin-bottom:8px;font-size:14px;font-weight:600;color:#fff;background:#222;border:1px solid #444;border-radius:6px;cursor:pointer;text-align:left;'; btn.textContent=n;
+btn.onclick=function(){document.body.removeChild(overlay);callback(n);}; box.appendChild(btn);
+});
+var cancel=document.createElement('button'); cancel.style.cssText='display:block;width:100%;padding:10px;font-size:13px;color:#888;background:transparent;border:1px solid #333;border-radius:6px;cursor:pointer;margin-top:4px;'; cancel.textContent='Never mind';
+cancel.onclick=function(){document.body.removeChild(overlay);}; box.appendChild(cancel);
+overlay.appendChild(box); document.body.appendChild(overlay);
+}
+
+function cancelInsp(id,proj,ty,date,time){
+var team = ["Kyle Haider", "Mike McConkey", "Brayden Duzan", "Matt Lulling"];
+showActionModal('Who is cancelling this?', team, function(who){
+var reason=prompt('Reason (optional):');
+fetch(SB+'/functions/v1/update-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},body:JSON.stringify({request_id:id,action:'cancel',action_by:who,reason:reason||''})})
+.then(r=>r.json()).then(data=>{if(data.success){alert('Cancelled.'); loadMD();} else {alert('Error: '+data.error);}});
+});
+}
+
+function editInsp(id,oldDate,oldTime){
+var team = ["Kyle Haider", "Mike McConkey", "Brayden Duzan", "Matt Lulling"];
+showActionModal('Who is editing this?', team, function(who){ showEditModal(id,oldDate,oldTime,who); });
+}
+
+function showEditModal(id,oldDate,oldTime,who){
+var overlay=document.createElement('div'); overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;';
+var modal=document.createElement('div'); modal.style.cssText='background:#1a1a1a;border-radius:12px;padding:30px;max-width:400px;width:100%;border:1px solid #333;';
+modal.innerHTML=`<h3 style="color:#e8742a;margin-bottom:20px;">Edit Inspection</h3><label style="color:#ccc;font-size:13px;">New Date</label><input type="date" id="eDate" value="${oldDate}" class="field-input"><label style="color:#ccc;font-size:13px;">New Time</label><input type="time" id="eTime" value="${oldTime}" class="field-input"><div style="display:flex;gap:10px;margin-top:20px;"><button id="cEdit" style="flex:1;background:#333;color:#fff;padding:12px;border:none;border-radius:8px;">Cancel</button><button id="sEdit" style="flex:1;background:#e8742a;color:#fff;padding:12px;border:none;border-radius:8px;">Save</button></div>`;
+overlay.appendChild(modal); document.body.appendChild(overlay);
+document.getElementById('cEdit').onclick=()=>overlay.remove();
+document.getElementById('sEdit').onclick=()=>{
+var nD=document.getElementById('eDate').value, nT=document.getElementById('eTime').value;
+fetch(SB+'/functions/v1/update-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},body:JSON.stringify({request_id:id,action:'edit',action_by:who,new_date:nD,new_time:nT})})
+.then(r=>r.json()).then(data=>{if(data.success){alert('Updated.'); overlay.remove(); loadMD();} else {alert('Error: '+data.error);}});
+};
+}
+
 function showCalendarSubscribe(){
 var modal = document.createElement('div');
 modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
@@ -345,6 +397,13 @@ function submitIR(){
     var newName = document.getElementById('iNewName').value.trim();
     if((!nm || nm === 'other') && newName){ nm = newName; }
     if(!nm || allFiles.length === 0 || !d || !t || !inspType || !inspDur){alert('Missing required fields.'); return;}
+    
+    // COLLECT EMAILS
+    var emails=[];
+    document.querySelectorAll('.emailCheck:checked').forEach(cb => emails.push(cb.value));
+    var addl = document.getElementById('additionalEmailsList').value.trim();
+    if(addl) emails = emails.concat(addl.split(',').map(e => e.trim()));
+
     var btn=document.getElementById('submitBtn'); btn.textContent='Submitting...'; btn.disabled=true;
     var fd=new FormData();
     allFiles.forEach((file, index) => fd.append('file_' + index, file));
@@ -352,10 +411,12 @@ function submitIR(){
     fd.append('inspection_date', d); fd.append('inspection_time', t);
     fd.append('inspection_types', JSON.stringify([inspType])); fd.append('duration', inspDur);
     fd.append('submitted_by', nm); fd.append('notes', document.getElementById('iNotes').value);
-    fd.append('subcontractor', ''); // Fixed: Column constraint satisfied
-    fd.append('location_detail', ''); 
+    fd.append('subcontractor', ''); // DATABASE FIX
+    fd.append('location_detail', ''); // DATABASE FIX
+    if(emails.length > 0) fd.append('email_recipients', JSON.stringify(emails)); // EMAIL FIX
     var idnt = document.getElementById('iIdentifier').value.trim();
-    fd.append('inspection_identifier', idnt);
+    if(idnt) fd.append('inspection_identifier', idnt);
+    
     fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd})
     .then(r=>r.json()).then(data=>{
         if(data.success){ document.getElementById('requestView').style.display='none'; document.getElementById('successView').style.display='block'; } 
