@@ -111,8 +111,11 @@ select.field-input{background:#222;color:#fff;}
 <div style="padding:16px;font-size:12px;color:#888;line-height:1.6;">
 <strong style="color:#5a8fc0;display:block;margin-bottom:8px;">Quick Guide:</strong>
 <div style="margin-bottom:4px;"><span style="color:#e8742a;">•</span> Click any day to see live schedule from all jobsites</div>
-<div style="margin-bottom:4px;"><span style="color:#e8742a;">•</span> Numbers show inspection count per day</div>
-<div><span style="color:#e8742a;">•</span> Additional emails can be saved as permanent checkboxes</div>
+</div>
+</div>
+<div class="card">
+<div style="padding:16px;text-align:center;">
+<button onclick="showCalendarSubscribe()" style="background:#5a8fc0;color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;">Subscribe to Calendar</button>
 </div>
 </div>
 </div>
@@ -144,6 +147,8 @@ select.field-input{background:#222;color:#fff;}
 <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
 <option value="17:00">5:00 PM</option>
 </select>
+<label class="field-label">Inspection Request # or Summary (Optional)</label>
+<input type="text" id="iIdentifier" class="field-input" placeholder="e.g., FDN-003, BEAM-12, SLAB-B2" maxlength="50">
 <label class="field-label">Duration *</label>
 <div class="dur-btns" id="durBtns">
 <div class="dur-btn" onclick="setDur('30')">30 min</div>
@@ -342,6 +347,7 @@ endTime=' - '+fmt(pad(endHour)+':'+pad(endMinutes));
 }
 html+='<span class="evt-time">'+timeDisplay+endTime+'</span>';
 html+=' — '+e.project+' — <span class="evt-type">'+tyShort+'</span>';
+if(e.inspection_identifier){html+=' <span style="color:#5a8fc0;">('+e.inspection_identifier+')</span>';}
 if(isCancelled)html+='<span class="cancelled-label">CANCELLED</span>';
 if(e.submitted_by)html+='<div class="evt-who">Submitted by: '+e.submitted_by+'</div>';
 if(e.notes)html+='<div class="evt-notes">'+e.notes+'</div>';
@@ -448,7 +454,7 @@ loadMD();
 function loadMD(){
 try {
 var s=cY+'-'+pad(cM+1)+'-01',ed=new Date(cY,cM+1,0).getDate(),e=cY+'-'+pad(cM+1)+'-'+pad(ed);
-fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
+fetch(SB+'/rest/v1/inspection_requests?select=id,inspection_date,inspection_time,inspection_types,project,gc,submitted_by,notes,status,flexible_display,inspection_identifier&inspection_date=gte.'+s+'&inspection_date=lte.'+e+'&order=inspection_date,inspection_time',{
 headers:{'apikey':AK,'Authorization':'Bearer '+AK}
 }).then(function(r){
 if(!r.ok){
@@ -559,7 +565,7 @@ loadSavedNames();
 }
 }
 function submitIR(){
-var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim();
+var d=document.getElementById('iDate').value,t=document.getElementById('iTime').value,nm=document.getElementById('iName').value.trim(),nt=document.getElementById('iNotes').value.trim(),identifier=document.getElementById('iIdentifier').value.trim();
 if(nm==='__other__'){
 nm=document.getElementById('iNameOther').value.trim();
 saveNameForFuture(); // Save name if checkbox is checked
@@ -598,6 +604,7 @@ if(isFlexible||inspType==='Special')fd.append('skip_conflict','true');
 if(inspType==='Special'&&specType)fd.append('special_type',specType);
 fd.append('subcontractor','');fd.append('location_detail','');
 fd.append('submitted_by',nm);fd.append('notes',nt);
+if(identifier){fd.append('inspection_identifier',identifier);}
 if(emails.length>0){fd.append('email_recipients',JSON.stringify(emails));}
 fetch(SB+'/functions/v1/submit-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK},body:fd
 }).then(function(r){return r.json();}).then(function(data){
@@ -622,9 +629,12 @@ document.getElementById('btnSpecial').classList.remove('active');document.getEle
 document.getElementById('specialSub').classList.remove('show');document.getElementById('specialType').selectedIndex=0;
 document.querySelectorAll('.emailCheck').forEach(function(cb){cb.checked=false;});
 document.getElementById('additionalEmailsList').value='';document.getElementById('saveEmailsCheck').checked=false;
-document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';
+document.getElementById('iName').selectedIndex=0;document.getElementById('iNotes').value='';document.getElementById('iIdentifier').value='';document.getElementById('iNameOther').value='';document.getElementById('iNameOther').style.display='none';
 document.getElementById('saveNameLabel').style.display='none';document.getElementById('saveNameCheck').checked=false;inspType='';inspDur='';photoFile=null;loadMD();
 document.querySelectorAll('.dur-btn').forEach(function(b){b.classList.remove('active');});
+}
+function showCalendarSubscribe(){
+alert('Calendar Subscription\\n\\nTo add this calendar to your iPhone:\\n\\n1. Settings → Calendar → Accounts → Add Account → Other\\n2. "Add Subscribed Calendar"\\n3. Paste URL: https://esxeusjjeuyhwwrtwpcv.supabase.co/functions/v1/calendar-feed?project=CSUSM\\n4. Done\\n\\nCalendar will auto-update with CSUSM inspections only.');
 }
 loadMD();
 loadSavedEmails();
