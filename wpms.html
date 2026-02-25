@@ -182,8 +182,9 @@ details[open] .collapsible-summary::after { content: '−'; }
 <option value="other">-- Add name below --</option>
 <option value="Jesse Saltzman">Jesse Saltzman</option>
 <option value="Ron Davis">Ron Davis</option>
-<option value="Scuyler Beltran">Scuyler Beltran</option>
-<option value="Alejandro Martinez">Alejandro Martinez</option>
+<option value="Scuyler Lindgren">Scuyler Lindgren</option>
+<option value="Alejandro Jimenez">Alejandro Jimenez</option>
+<option value="Bennett Evans">Bennett Evans</option>
 </select>
 
 <label class="field-label">Notes</label>
@@ -193,8 +194,9 @@ details[open] .collapsible-summary::after { content: '−'; }
 <div class="email-list">
 <label class="email-row"><input type="checkbox" value="saltzman.jesse@gmail.com" class="emailCheck">Jesse Saltzman</label>
 <label class="email-row"><input type="checkbox" value="rdavis@lusardi.com" class="emailCheck">Ron Davis (Lusardi)</label>
-<label class="email-row"><input type="checkbox" value="sbeltran@lusardi.com" class="emailCheck">Scuyler Beltran (Lusardi)</label>
-<label class="email-row"><input type="checkbox" value="amartinez@lusardi.com" class="emailCheck">Alejandro Martinez (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="slindgren@lusardi.com" class="emailCheck">Scuyler Lindgren (Lusardi)</label>
+<label class="email-row"><input type="checkbox" value="Alejandro.Jimenez@socotec.us" class="emailCheck">Alejandro Jimenez (Socotec)</label>
+<label class="email-row"><input type="checkbox" value="bevans@lusardi.com" class="emailCheck">Bennett Evans (Lusardi)</label>
 </div>
 
 <details class="collapsible-section">
@@ -313,7 +315,7 @@ overlay.appendChild(box); document.body.appendChild(overlay);
 }
 
 function cancelInsp(id,proj,ty,date,time){
-var team=["Jesse Saltzman","Ron Davis","Scuyler Beltran","Alejandro Martinez"];
+var team=["Jesse Saltzman","Ron Davis","Scuyler Lindgren","Alejandro Jimenez","Bennett Evans"];
 showActionModal('Who is cancelling this?',team,function(who){
 var reason=prompt('Reason (optional):');
 fetch(SB+'/functions/v1/update-inspection',{method:'POST',headers:{'Authorization':'Bearer '+AK,'apikey':AK,'Content-Type':'application/json'},body:JSON.stringify({request_id:id,action:'cancel',action_by:who,reason:reason||''})})
@@ -322,7 +324,7 @@ fetch(SB+'/functions/v1/update-inspection',{method:'POST',headers:{'Authorizatio
 }
 
 function editInsp(id,oldDate,oldTime){
-var team=["Jesse Saltzman","Ron Davis","Scuyler Beltran","Alejandro Martinez"];
+var team=["Jesse Saltzman","Ron Davis","Scuyler Lindgren","Alejandro Jimenez","Bennett Evans"];
 showActionModal('Who is editing this?',team,function(who){ showEditModal(id,oldDate,oldTime,who); });
 }
 
